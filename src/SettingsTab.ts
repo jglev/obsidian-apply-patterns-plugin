@@ -129,17 +129,15 @@ export class SettingsTab extends PluginSettingTab {
                         await this.plugin.saveSettings();
                     },
                 );
-            }).addButton((button) => {
-                        button
-                            .setIcon(
-                                'magnifying-glass',
-                            )
-                            .setTooltip(
-                                'Filter Patterns',
-                            )
-                            .onClick(async () => {
-                                this.display();
-                            })})
+            })
+            .addButton((button) => {
+                button
+                    .setIcon('magnifying-glass')
+                    .setTooltip('Filter Patterns')
+                    .onClick(async () => {
+                        this.display();
+                    });
+            })
             .setDesc('Filter patterns by name');
 
         const patterns = getSettings().patterns;
@@ -151,8 +149,8 @@ export class SettingsTab extends PluginSettingTab {
                 patternFilterString !== ''
             ) {
                 if (
-                    
-                    !pattern.name.toLowerCase()
+                    !pattern.name
+                        .toLowerCase()
                         .includes(patternFilterString.toLowerCase())
                 ) {
                     continue;
@@ -185,50 +183,47 @@ export class SettingsTab extends PluginSettingTab {
 
                             await this.plugin.saveSettings();
                         });
-                }).addExtraButton((button) => {
-                        button
-                            .setIcon('moveRowUp')
-                            .setTooltip('Move Pattern up')
-                            .setDisabled(patternIndex === 0)
-                            .onClick(async () => {
-                                let newPatterns = cloneDeep(
-                                    getSettings().patterns,
-                                );
-                                newPatterns = moveInArray(
-                                    newPatterns,
-                                    patternIndex,
-                                    patternIndex - 1,
-                                );
-                                updateSettings({
-                                    patterns: newPatterns,
-                                });
-
-                                await this.plugin.saveSettings();
-                                this.display();
+                })
+                .addExtraButton((button) => {
+                    button
+                        .setIcon('moveRowUp')
+                        .setTooltip('Move Pattern up')
+                        .setDisabled(patternIndex === 0)
+                        .onClick(async () => {
+                            let newPatterns = cloneDeep(getSettings().patterns);
+                            newPatterns = moveInArray(
+                                newPatterns,
+                                patternIndex,
+                                patternIndex - 1,
+                            );
+                            updateSettings({
+                                patterns: newPatterns,
                             });
-                    })
-                    .addExtraButton((button) => {
-                        button
-                            .setIcon('moveRowDown')
-                            .setTooltip('Move Rule down')
-                            .setDisabled(patternIndex === patterns.length - 1)
-                            .onClick(async () => {
-                                let newPatterns = cloneDeep(
-                                    getSettings().patterns,
-                                );
-                                newPatterns = moveInArray(
-                                    newPatterns,
-                                    patternIndex,
-                                    patternIndex + 1,
-                                );
-                                updateSettings({
-                                    patterns: newPatterns,
-                                });
 
-                                await this.plugin.saveSettings();
-                                this.display();
+                            await this.plugin.saveSettings();
+                            this.display();
+                        });
+                })
+                .addExtraButton((button) => {
+                    button
+                        .setIcon('moveRowDown')
+                        .setTooltip('Move Rule down')
+                        .setDisabled(patternIndex === patterns.length - 1)
+                        .onClick(async () => {
+                            let newPatterns = cloneDeep(getSettings().patterns);
+                            newPatterns = moveInArray(
+                                newPatterns,
+                                patternIndex,
+                                patternIndex + 1,
+                            );
+                            updateSettings({
+                                patterns: newPatterns,
                             });
-                    })
+
+                            await this.plugin.saveSettings();
+                            this.display();
+                        });
+                })
                 .addExtraButton((button) => {
                     button
                         .setIcon('cross')
@@ -546,7 +541,7 @@ export class SettingsTab extends PluginSettingTab {
                         this.display();
                     });
             });
-        });
+        }
 
         const addPatternButtonEl = patternsEl.createEl('div', {
             cls: 'add-pattern-button-el',

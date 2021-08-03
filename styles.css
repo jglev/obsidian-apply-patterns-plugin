@@ -17,6 +17,7 @@
 }
 
 .patterns .rule.disabled,
+.patterns .pattern .is-disabled,
 .patterns .rule .is-disabled {
     opacity: 50%;
 }

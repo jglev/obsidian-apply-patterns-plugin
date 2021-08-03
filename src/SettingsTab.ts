@@ -116,8 +116,49 @@ export class SettingsTab extends PluginSettingTab {
             cls: 'setting-item-description',
         });
 
+        new Setting(patternsEl)
+            .addText((text) => {
+                const settings = getSettings();
+                text.setValue(settings.filterString || '').onChange(
+                    async (value) => {
+                        updateSettings({
+                            ...cloneDeep(getSettings()),
+                            filterString: value,
+                        });
+
+                        await this.plugin.saveSettings();
+                    },
+                );
+            }).addButton((button) => {
+                        button
+                            .setIcon(
+                                'magnifying-glass',
+                            )
+                            .setTooltip(
+                                'Filter Patterns',
+                            )
+                            .onClick(async () => {
+                                this.display();
+                            })})
+            .setDesc('Filter patterns by name');
+
         const patterns = getSettings().patterns;
-        patterns.forEach((pattern: Pattern, patternIndex: number) => {
+        for (const [patternIndex, pattern] of patterns.entries()) {
+            const settings = getSettings();
+            const patternFilterString = settings.filterString;
+            if (
+                patternFilterString !== undefined &&
+                patternFilterString !== ''
+            ) {
+                if (
+                    
+                    !pattern.name.toLowerCase()
+                        .includes(patternFilterString.toLowerCase())
+                ) {
+                    continue;
+                }
+            }
+
             const patternEl = patternsEl.createEl('div');
             patternEl.addClass('pattern');
 
@@ -144,7 +185,50 @@ export class SettingsTab extends PluginSettingTab {
 
                             await this.plugin.saveSettings();
                         });
-                })
+                }).addExtraButton((button) => {
+                        button
+                            .setIcon('moveRowUp')
+                            .setTooltip('Move Pattern up')
+                            .setDisabled(patternIndex === 0)
+                            .onClick(async () => {
+                                let newPatterns = cloneDeep(
+                                    getSettings().patterns,
+                                );
+                                newPatterns = moveInArray(
+                                    newPatterns,
+                                    patternIndex,
+                                    patternIndex - 1,
+                                );
+                                updateSettings({
+                                    patterns: newPatterns,
+                                });
+
+                                await this.plugin.saveSettings();
+                                this.display();
+                            });
+                    })
+                    .addExtraButton((button) => {
+                        button
+                            .setIcon('moveRowDown')
+                            .setTooltip('Move Rule down')
+                            .setDisabled(patternIndex === patterns.length - 1)
+                            .onClick(async () => {
+                                let newPatterns = cloneDeep(
+                                    getSettings().patterns,
+                                );
+                                newPatterns = moveInArray(
+                                    newPatterns,
+                                    patternIndex,
+                                    patternIndex + 1,
+                                );
+                                updateSettings({
+                                    patterns: newPatterns,
+                                });
+
+                                await this.plugin.saveSettings();
+                                this.display();
+                            });
+                    })
                 .addExtraButton((button) => {
                     button
                         .setIcon('cross')

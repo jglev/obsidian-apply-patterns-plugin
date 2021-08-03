@@ -2,6 +2,7 @@ import cloneDeep from 'lodash.clonedeep';
 
 export interface Settings {
     patterns: Pattern[];
+    filterString?: string;
 }
 
 export interface Pattern {
@@ -22,6 +23,7 @@ export interface PatternRule {
 
 export const defaultSettings: Settings = {
     patterns: [],
+    filterString: '',
 };
 
 let settings: Settings = { ...defaultSettings };

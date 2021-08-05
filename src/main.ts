@@ -4,7 +4,7 @@ import { Commands } from './Commands';
 import { getSettings, updateSettings } from './Settings';
 import { SettingsTab } from './SettingsTab';
 
-export default class TasksPlugin extends Plugin {
+export default class ApplyPatternsPlugin extends Plugin {
     async onload() {
         console.log('loading plugin "apply-patterns"');
 

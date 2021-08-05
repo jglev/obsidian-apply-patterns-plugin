@@ -134,7 +134,7 @@ export default {
     input: 'src/main.ts',
     output: {
         dir: '.',
-        sourcemap: 'inline',
+        sourcemap: 'hidden',
         format: 'cjs',
         exports: 'default',
         banner,

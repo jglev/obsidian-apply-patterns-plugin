@@ -1,8 +1,15 @@
-import { App, Editor, MarkdownView, Notice, View } from 'obsidian';
+import {
+    App,
+    Editor,
+    EditorTransaction,
+    MarkdownView,
+    Notice,
+    View,
+} from 'obsidian';
 
-import { validateRuleString } from 'ValidateRuleString';
-import { PatternModal } from 'PatternsModal';
-import { getSettings } from '../Settings';
+import { validateRuleString } from './ValidateRuleString';
+import { PatternModal } from './PatternsModal';
+import { getSettings } from './Settings';
 
 // import { PatternRule } from '../Settings';
 
@@ -14,12 +21,8 @@ export const applyPattern = (
     mode: 'lines' | 'selection' = 'lines',
 ) => {
     if (checking) {
-        if (!(view instanceof MarkdownView)) {
-            // If we are not in a markdown view, the command shouldn't be shown.
-            return false;
-        }
-
-        // The command should always trigger in a markdown view:
+        // editorCallback always happens in a MarkdownView; the command should
+        // only be shown in MarkdownView:
         return true;
     }
 
@@ -81,6 +84,10 @@ export const applyPattern = (
             return; // Stop the function prematurely
         }
 
+        const transaction: EditorTransaction = {
+            changes: [],
+        };
+
         if (mode === 'lines') {
             const updatedLines: string[] = [];
             for (
@@ -108,39 +115,30 @@ export const applyPattern = (
                 });
                 updatedLines.push(line);
             }
-            editor.replaceRange(
-                updatedLines.join('\n'),
-                { line: minLine, ch: 0 },
-                {
-                    line: maxLine,
-                    ch: editor.getLine(maxLine).length,
-                },
-            );
+            transaction.changes?.push({
+                from: { line: minLine, ch: 0 },
+                to: { line: maxLine, ch: editor.getLine(maxLine).length },
+                text: updatedLines.join('\n'),
+            });
         }
 
         if (mode === 'selection') {
             let updatedSelection = editor.getSelection();
-            pattern.rules.forEach((rule) => {
+            pattern.rules.forEach((rule, ruleIndex) => {
                 updatedSelection = updatedSelection.replace(
                     new RegExp(
-                        rule.from,
+                        allRuleStringsValidated[ruleIndex].from,
                         `u${rule.caseInsensitive ? 'i' : ''}${
                             rule.global ? 'g' : ''
-                        }`,
+                        }${rule.multiline ? 'm' : ''}${rule.sticky ? 's' : ''}`,
                     ),
-                    rule.to,
+                    allRuleStringsValidated[ruleIndex].to,
                 );
             });
-            editor.replaceSelection(updatedSelection);
+            transaction.replaceSelection = updatedSelection;
         }
 
-        // This is disabled for now because it was adding an extra node to the
-        // editor's Undo history, making using Undo immediately after running
-        // the above an extra step for the user.
-        // editor.setSelection(
-        //     { line: minLine, ch: 0 },
-        //     { line: maxLine, ch: editor.getLine(maxLine).length + 1 },
-        // );
+        editor.transaction(transaction);
     };
 
     // Need to create a new instance every time, as cursor can change.

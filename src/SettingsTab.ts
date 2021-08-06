@@ -2,7 +2,7 @@ import cloneDeep from 'lodash.clonedeep';
 import { Notice, PluginSettingTab, Setting } from 'obsidian';
 import { validateRuleString } from 'ValidateRuleString';
 import { Pattern, PatternRule, getSettings, updateSettings } from './Settings';
-import type TasksPlugin from './main';
+import type ApplyPatterns from './main';
 
 const moveInArray = (arr: any[], from: number, to: number) => {
     const arrClone = cloneDeep(arr);
@@ -13,9 +13,9 @@ const moveInArray = (arr: any[], from: number, to: number) => {
 };
 
 export class SettingsTab extends PluginSettingTab {
-    private readonly plugin: TasksPlugin;
+    private readonly plugin: ApplyPatterns;
 
-    constructor({ plugin }: { plugin: TasksPlugin }) {
+    constructor({ plugin }: { plugin: ApplyPatterns }) {
         super(plugin.app, plugin);
 
         this.plugin = plugin;

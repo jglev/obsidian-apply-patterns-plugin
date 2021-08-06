@@ -1,17 +1,45 @@
-import { Plugin } from 'obsidian';
+import { Editor, Plugin, View } from 'obsidian';
 
-import { Commands } from './Commands';
+import { applyPattern } from './ApplyPattern';
 import { getSettings, updateSettings } from './Settings';
 import { SettingsTab } from './SettingsTab';
 
-export default class TasksPlugin extends Plugin {
+export default class ApplyPatternsPlugin extends Plugin {
     async onload() {
         console.log('loading plugin "apply-patterns"');
 
         await this.loadSettings();
         this.addSettingTab(new SettingsTab({ plugin: this }));
 
-        new Commands({ plugin: this });
+        this.addCommand({
+            id: 'apply-pattern-to-lines',
+            name: 'Apply pattern to whole lines',
+            editorCheckCallback: (
+                checking: boolean,
+                editor: Editor,
+                view: View,
+            ) => {
+                return applyPattern(checking, editor, view, this.app, 'lines');
+            },
+        });
+
+        this.addCommand({
+            id: 'apply-pattern-to-selection',
+            name: 'Apply pattern to selection',
+            editorCheckCallback: (
+                checking: boolean,
+                editor: Editor,
+                view: View,
+            ) => {
+                return applyPattern(
+                    checking,
+                    editor,
+                    view,
+                    this.app,
+                    'selection',
+                );
+            },
+        });
     }
 
     onunload() {

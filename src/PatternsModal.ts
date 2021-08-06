@@ -15,7 +15,12 @@ export class PatternModal extends FuzzySuggestModal<number> {
 
         this.onChooseItem = (patternIndex: number) => {
             onChooseItem(patternIndex);
-            this.close();
+            // Note: Using this.close() here was causing a bug whereby new
+            // text was unable to be typed until the user had opened another
+            // modal or switched away from the window. @lishid noted at
+            // https://github.com/obsidianmd/obsidian-releases/pull/396#issuecomment-894017526
+            // that the modal is automatically closed at the conclusion of
+            // onChooseItem.
         };
     }
 

@@ -3,7 +3,9 @@
 }
 
 .patterns .pattern,
-.patterns .add-pattern-button-el {
+.patterns .add-pattern-button-el,
+.commands .command,
+.commands .add-command-button-el {
     border-top: 1px dotted var(--background-modifier-border);
     padding: 18px 0 0 0;
 }
@@ -16,9 +18,14 @@
     width: 100%;
 }
 
+.commands .command input:first-of-type {
+    margin-right: 18px;
+}
+
 .patterns .rule.disabled,
 .patterns .pattern .is-disabled,
-.patterns .rule .is-disabled {
+.patterns .rule .is-disabled,
+.commands .command .is-disabled {
     opacity: 50%;
 }
 
@@ -26,7 +33,8 @@
     text-align: center;
 }
 
-.patterns .rule .checkbox-container::after {
+.patterns .rule .checkbox-container::after,
+.commands .command .checkbox-container::after {
     /* Get content aligned vertically and horizontally: */
     display: flex;
     align-items: center;
@@ -35,18 +43,25 @@
     font-weight: 600;
 }
 
+.commands .command .checkbox-container:nth-of-type(1)::after {
+    content: "S";
+}
+.commands .command .checkbox-container:nth-of-type(2)::after {
+    content: "L";
+}
+.commands .command .checkbox-container:nth-of-type(3)::after {
+    content: "D";
+}
+
 .patterns .rule .checkbox-container:nth-of-type(1)::after {
     content: "i";
 }
-
 .patterns .rule .checkbox-container:nth-of-type(2)::after {
     content: "g";
 }
-
 .patterns .rule .checkbox-container:nth-of-type(3)::after {
     content: "m";
 }
-
 .patterns .rule .checkbox-container:nth-of-type(4)::after {
     content: "s";
 }
@@ -59,6 +74,11 @@
     margin-left: 15px;
 }
 
-.patterns-description-el .bold {
+.bold {
     font-weight: bold;
+}
+
+.commands .bold {
+    color: var(--text-error);
+    font-size: 1.15em;
 }

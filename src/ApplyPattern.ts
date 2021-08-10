@@ -9,7 +9,7 @@ import {
 
 import { validateRuleString } from './ValidateRuleString';
 import { PatternModal } from './PatternsModal';
-import { getSettings } from './Settings';
+import { Command, getSettings } from './Settings';
 
 // import { PatternRule } from '../Settings';
 
@@ -19,6 +19,7 @@ export const applyPattern = (
     view: View,
     app: App,
     mode: 'lines' | 'selection' | 'document' = 'lines',
+    command?: Command,
 ) => {
     if (checking) {
         // editorCallback always happens in a MarkdownView; the command should
@@ -174,6 +175,7 @@ export const applyPattern = (
     const patternModal = new PatternModal({
         app,
         onChooseItem,
+        command,
     });
     patternModal.open();
 };

@@ -3,6 +3,9 @@ import cloneDeep from 'lodash.clonedeep';
 export interface Settings {
     patterns: Pattern[];
     filterString?: string;
+    commandFilterString?: string;
+    commands: Command[];
+    apiVersion?: number;
 }
 
 export interface Pattern {
@@ -24,7 +27,21 @@ export interface PatternRule {
 export const defaultSettings: Settings = {
     patterns: [],
     filterString: '',
+    commandFilterString: '',
+    commands: [],
+    apiVersion: 2,
 };
+
+export interface Command {
+    name: string;
+    patternFilter: string;
+    selection: boolean;
+    lines: boolean;
+    document: boolean;
+}
+
+export const formatUnnamedPattern = (patternIndex: number): string =>
+    `Pattern ${patternIndex + 1} (Untitled)`;
 
 let settings: Settings = { ...defaultSettings };
 

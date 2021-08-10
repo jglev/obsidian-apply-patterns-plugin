@@ -40,6 +40,24 @@ export default class ApplyPatternsPlugin extends Plugin {
                 );
             },
         });
+
+        this.addCommand({
+            id: 'apply-pattern-to-document',
+            name: 'Apply pattern to whole document',
+            editorCheckCallback: (
+                checking: boolean,
+                editor: Editor,
+                view: View,
+            ) => {
+                return applyPattern(
+                    checking,
+                    editor,
+                    view,
+                    this.app,
+                    'document',
+                );
+            },
+        });
     }
 
     onunload() {

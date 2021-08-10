@@ -18,7 +18,7 @@ export const applyPattern = (
     editor: Editor,
     view: View,
     app: App,
-    mode: 'lines' | 'selection' = 'lines',
+    mode: 'lines' | 'selection' | 'document' = 'lines',
 ) => {
     if (checking) {
         // editorCallback always happens in a MarkdownView; the command should
@@ -136,6 +136,35 @@ export const applyPattern = (
                 );
             });
             transaction.replaceSelection = updatedSelection;
+        }
+        if (mode === 'document') {
+            const editorLineCount = editor.lineCount();
+            const fullDocumentSelector = {
+                from: { line: 0, ch: 0 },
+                to: {
+                    line: editorLineCount,
+                    ch: editor.getLine(editorLineCount - 1).length,
+                },
+            };
+            let updatedDocument = editor.getRange(
+                fullDocumentSelector.from,
+                fullDocumentSelector.to,
+            );
+            pattern.rules.forEach((rule, ruleIndex) => {
+                updatedDocument = updatedDocument.replace(
+                    new RegExp(
+                        allRuleStringsValidated[ruleIndex].from,
+                        `u${rule.caseInsensitive ? 'i' : ''}${
+                            rule.global ? 'g' : ''
+                        }${rule.multiline ? 'm' : ''}${rule.sticky ? 's' : ''}`,
+                    ),
+                    allRuleStringsValidated[ruleIndex].to,
+                );
+            });
+            transaction.changes?.push({
+                ...fullDocumentSelector,
+                text: updatedDocument,
+            });
         }
 
         editor.transaction(transaction);

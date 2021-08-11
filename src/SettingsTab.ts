@@ -2,8 +2,13 @@ import cloneDeep from 'lodash.clonedeep';
 import { Notice, PluginSettingTab, Setting } from 'obsidian';
 import { validateRuleString } from 'ValidateRuleString';
 import {
+    Command,
     Pattern,
     PatternRule,
+    clearSettings,
+    defaultCommandSettings,
+    defaultPatternRuleSettings,
+    defaultPatternSettings,
     formatUnnamedPattern,
     getSettings,
     updateSettings,
@@ -534,12 +539,7 @@ export class SettingsTab extends PluginSettingTab {
                     .onClick(async () => {
                         const newPatterns = cloneDeep(getSettings().patterns);
                         newPatterns[patternIndex].rules.push({
-                            from: '',
-                            to: '',
-                            caseInsensitive: false,
-                            global: false,
-                            multiline: false,
-                            sticky: false,
+                            ...defaultPatternRuleSettings,
                         });
                         updateSettings({
                             patterns: newPatterns,
@@ -562,72 +562,13 @@ export class SettingsTab extends PluginSettingTab {
                     updateSettings({
                         patterns: [
                             ...getSettings().patterns,
-                            { name: '', done: false, rules: [] },
+                            { ...defaultPatternSettings },
                         ],
                     });
                     await this.plugin.saveSettings();
                     this.display();
                 });
         });
-
-        const importExportEl = containerEl.createDiv('Import / Export');
-        importExportEl.addClass('import-export-div');
-        importExportEl.createEl('h3', { text: 'Import / Export patterns' });
-        new Setting(importExportEl)
-            .setDesc(
-                'You can import and export patterns as JSON through the clipboard, in order to more readily share patterns with other users.',
-            )
-            .addButton((button) => {
-                button
-                    // .setIcon('right-arrow-with-tail')
-                    .setButtonText('Import from clipboard')
-                    .setClass('import-pattern-button')
-                    .onClick(async () => {
-                        try {
-                            const newSettings: Pattern[] = JSON.parse(
-                                await navigator.clipboard.readText(),
-                            );
-                            updateSettings({
-                                patterns: [
-                                    ...getSettings().patterns,
-                                    ...newSettings,
-                                ],
-                            });
-                            await this.plugin.saveSettings();
-                            this.display();
-                            new Notice(
-                                'Imported pattern settings from clipboard!',
-                            );
-                        } catch (error) {
-                            new Notice(
-                                'Error importing pattern settings from clipboard. See developer console for more information.',
-                            );
-                            console.log(error);
-                        }
-                    });
-            })
-            .addButton((button) => {
-                button
-                    // .setIcon('right-arrow-with-tail')
-                    .setButtonText('Export to clipboard')
-                    .setClass('export-pattern-button')
-                    .onClick(async () => {
-                        try {
-                            const settings = getSettings().patterns;
-                            await navigator.clipboard.writeText(
-                                JSON.stringify(settings, null, 2),
-                            );
-                            new Notice(
-                                'Copied pattern settings as JSON to clipboard!',
-                            );
-                        } catch (error) {
-                            new Notice(
-                                'Error copying pattern settings as JSON to clipboard. See developer console for more information.',
-                            );
-                            console.log(error);
-                        }
-                    });
-            });
 
         const commandsEl = containerEl.createEl('div');
         commandsEl.addClass('commands');
@@ -877,11 +818,7 @@ export class SettingsTab extends PluginSettingTab {
                         commands: [
                             ...getSettings().commands,
                             {
-                                name: '',
-                                patternFilter: '',
-                                selection: true,
-                                lines: true,
-                                document: true,
+                                ...defaultCommandSettings,
                             },
                         ],
                     });
@@ -889,5 +826,176 @@ export class SettingsTab extends PluginSettingTab {
                     this.display();
                 });
         });
+
+        const importExportEl = containerEl.createDiv();
+        importExportEl.addClass('import-export-div');
+        importExportEl.createEl('h2', {
+            text: 'Import / Export / Clear',
+        });
+        importExportEl.createEl('h3', {
+            text: 'Patterns',
+        });
+        new Setting(importExportEl)
+            .setDesc(
+                'You can import and export patterns as JSON through the clipboard, in order to more readily share patterns with other users.',
+            )
+            .addButton((button) => {
+                button
+                    // .setIcon('right-arrow-with-tail')
+                    .setButtonText('Import from clipboard')
+                    .setClass('import-pattern-button')
+                    .onClick(async () => {
+                        try {
+                            const newSettings: Pattern[] = JSON.parse(
+                                await navigator.clipboard.readText(),
+                            );
+                            updateSettings({
+                                patterns: [
+                                    ...getSettings().patterns,
+                                    ...newSettings,
+                                ],
+                            });
+                            await this.plugin.saveSettings();
+                            this.display();
+                            new Notice(
+                                'Imported pattern settings from clipboard!',
+                            );
+                        } catch (error) {
+                            new Notice(
+                                'Error importing pattern settings from clipboard. See developer console for more information.',
+                            );
+                            console.log(error);
+                        }
+                    });
+            })
+            .addButton((button) => {
+                button
+                    // .setIcon('right-arrow-with-tail')
+                    .setButtonText('Export to clipboard')
+                    .setClass('export-pattern-button')
+                    .onClick(async () => {
+                        try {
+                            const settings = getSettings().patterns;
+                            await navigator.clipboard.writeText(
+                                JSON.stringify(settings, null, 2),
+                            );
+                            new Notice(
+                                'Copied pattern settings as JSON to clipboard!',
+                            );
+                        } catch (error) {
+                            new Notice(
+                                'Error copying pattern settings as JSON to clipboard. See developer console for more information.',
+                            );
+                            console.log(error);
+                        }
+                    });
+            });
+        importExportEl.createEl('h3', {
+            text: 'Commands',
+        });
+        new Setting(importExportEl)
+            .setDesc(
+                'You can import and export commands as JSON through the clipboard, in order to more readily share commands with other users.',
+            )
+            .addButton((button) => {
+                button
+                    // .setIcon('right-arrow-with-tail')
+                    .setButtonText('Import from clipboard')
+                    .setClass('import-command-button')
+                    .onClick(async () => {
+                        try {
+                            const newSettings: Command[] = JSON.parse(
+                                await navigator.clipboard.readText(),
+                            );
+                            updateSettings({
+                                commands: [
+                                    ...getSettings().commands,
+                                    ...newSettings,
+                                ],
+                            });
+                            await this.plugin.saveSettings();
+                            this.display();
+                            new Notice(
+                                'Imported command settings from clipboard!',
+                            );
+                        } catch (error) {
+                            new Notice(
+                                'Error importing command settings from clipboard. See developer console for more information.',
+                            );
+                            console.log(error);
+                        }
+                    });
+            })
+            .addButton((button) => {
+                button
+                    // .setIcon('right-arrow-with-tail')
+                    .setButtonText('Export to clipboard')
+                    .setClass('export-command-button')
+                    .onClick(async () => {
+                        try {
+                            const settings = getSettings().commands;
+                            await navigator.clipboard.writeText(
+                                JSON.stringify(settings, null, 2),
+                            );
+                            new Notice(
+                                'Copied command settings as JSON to clipboard!',
+                            );
+                        } catch (error) {
+                            new Notice(
+                                'Error copying command settings as JSON to clipboard. See developer console for more information.',
+                            );
+                            console.log(error);
+                        }
+                    });
+            });
+
+        importExportEl.createEl('h3', {
+            text: 'Clear all',
+        });
+        let clearAllSettingsPrimed = false;
+        let primerTimer: ReturnType<typeof setTimeout> | null;
+        new Setting(importExportEl)
+            .setDesc('Clear and reset all patterns and commands.')
+            .addButton((button) => {
+                button
+                    .setButtonText('Clear all settings for this plugin')
+                    .onClick(async () => {
+                        if (primerTimer) {
+                            clearTimeout(primerTimer);
+                        }
+                        if (clearAllSettingsPrimed === true) {
+                            const settingsBackup = cloneDeep(getSettings());
+                            try {
+                                await navigator.clipboard.writeText(
+                                    JSON.stringify(settingsBackup, null, 2),
+                                );
+                                clearSettings();
+                                await this.plugin.saveSettings();
+                                this.display();
+                                new Notice(
+                                    "Cleared and reset plugin settings. Just in case you didn't mean to do this, the plugin's settings were copied to your clipboard before clearing them.",
+                                );
+                            } catch (error) {
+                                new Notice(
+                                    'Error clearing and resetting plugin settings.',
+                                );
+                                console.log(error);
+                                updateSettings(settingsBackup);
+                            }
+                            return;
+                        }
+                        primerTimer = setTimeout(
+                            () => {
+                                button.setButtonText(
+                                    'Clear all settings for this plugin',
+                                );
+                                clearAllSettingsPrimed = false;
+                            },
+                            1000 * 4, // 4 second timeout
+                        );
+                        clearAllSettingsPrimed = true;
+                        button.setButtonText('Click again to clear settings');
+                    });
+            });
     }
 }

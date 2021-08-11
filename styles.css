@@ -78,6 +78,11 @@
     font-weight: bold;
 }
 
+.clear-settings-button.primed button {
+    background-color: var(--background-modifier-error) !important;
+    color: var(--text-on-accent) !important;
+}
+
 .commands .bold {
     color: var(--text-error);
     font-size: 1.15em;

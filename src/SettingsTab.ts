@@ -586,6 +586,8 @@ export class SettingsTab extends PluginSettingTab {
             ' Each command is populated by filtering the Pattern names above. Untitled patterns are given placeholder names of the form ',
             fragment.createEl('code', { text: formatUnnamedPattern(1) }),
             '."',
+            fragment.createEl('br'),
+            'If a command matches only one Pattern, it will automatically run that Pattern when the command is called. If the command matches more than one Pattern, a submenu will open, asking which Pattern you would like to run.',
         );
 
         new Setting(commandsEl)
@@ -988,7 +990,9 @@ export class SettingsTab extends PluginSettingTab {
         });
         let clearAllSettingsPrimed = false;
         let primerTimer: ReturnType<typeof setTimeout> | null;
-        new Setting(importExportEl)
+        const clearButtonEl = importExportEl.createEl('span');
+        clearButtonEl.addClass('clear-settings-button');
+        new Setting(clearButtonEl)
             .setDesc('Clear and reset all patterns and commands.')
             .addButton((button) => {
                 button
@@ -1000,14 +1004,11 @@ export class SettingsTab extends PluginSettingTab {
                         if (clearAllSettingsPrimed === true) {
                             const settingsBackup = cloneDeep(getSettings());
                             try {
-                                await navigator.clipboard.writeText(
-                                    JSON.stringify(settingsBackup, null, 2),
-                                );
                                 clearSettings();
                                 await this.plugin.saveSettings();
                                 this.display();
                                 new Notice(
-                                    "Cleared and reset plugin settings. Just in case you didn't mean to do this, the plugin's settings were copied to your clipboard before clearing them.",
+                                    'Apply Patterns plugin settings reset.',
                                 );
                             } catch (error) {
                                 new Notice(
@@ -1024,10 +1025,12 @@ export class SettingsTab extends PluginSettingTab {
                                     'Clear all settings for this plugin',
                                 );
                                 clearAllSettingsPrimed = false;
+                                clearButtonEl.removeClass('primed');
                             },
                             1000 * 4, // 4 second timeout
                         );
                         clearAllSettingsPrimed = true;
+                        clearButtonEl.addClass('primed');
                         button.setButtonText('Click again to clear settings');
                     });
             });

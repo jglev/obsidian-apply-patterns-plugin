@@ -58,7 +58,12 @@ export class SettingsTab extends PluginSettingTab {
                 href: 'https://www.regular-expressions.info/',
                 text: 'Regular Expressions.info',
             }),
-            ', and elsewhere.',
+            ', and elsewhere. This plugin uses the ',
+            fragment.createEl('a', {
+                href: 'https://www.regular-expressions.info/javascript.html',
+                text: 'ECMAScript / Javascript flavor',
+            }),
+            ' of Regular Expressions.',
         );
 
         patternsDescEl.createEl(

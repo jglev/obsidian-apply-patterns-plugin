@@ -89,6 +89,7 @@ Follow the steps below to install the plugin.
 
 ## Usage
 
+- This plugin uses the [ECMAScript / Javascript flavor](https://www.regular-expressions.info/javascript.html) of Regular Expressions.
 - Within a Pattern, rules execute sequentially. Thus, the output of Rule 1 is passed as input to Rule 2, and the output of Rule 2 is passed as input to Rule 3, etc. At the end of the set of rules, the final output is used to replace the text in the editor.
 - The plugin provides three commands by default:
     - `Apply Patterns: Apply pattern to whole lines` will loop over each line that is selected in the editor, and apply the Pattern to the entirety of each line.

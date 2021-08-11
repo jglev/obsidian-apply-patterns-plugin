@@ -2,7 +2,7 @@
  * Generated type guards for "Settings.ts".
  * WARNING: Do not manually change this file.
  */
-import { Settings, Pattern, PatternRule, Command } from "./Settings";
+import type { Settings, Pattern, PatternRule, Command } from "./Settings";
 
 export function isSettings(obj: any, _argumentName?: string): obj is Settings {
     return (
@@ -64,8 +64,14 @@ export function isCommand(obj: any, _argumentName?: string): obj is Command {
             typeof obj === "function") &&
         typeof obj.name === "string" &&
         typeof obj.patternFilter === "string" &&
-        typeof obj.selection === "boolean" &&
-        typeof obj.lines === "boolean" &&
-        typeof obj.document === "boolean"
+        (typeof obj.selection === "undefined" ||
+            obj.selection === false ||
+            obj.selection === true) &&
+        (typeof obj.lines === "undefined" ||
+            obj.lines === false ||
+            obj.lines === true) &&
+        (typeof obj.document === "undefined" ||
+            obj.document === false ||
+            obj.document === true)
     )
 }

@@ -8,7 +8,7 @@
         "build": "yarn generate-typeguard-functions && rollup --config rollup.config.js",
         "lint": "eslint ./src --fix && tsc --noEmit --pretty && svelte-check",
         "test": "echo 'No tests currently defined' && exit 0",
-        "generate-typeguard-functions": "ts-auto-guard ./src/Settings.ts"
+        "generate-typeguard-functions": "rm ./src/Settings.guard.ts && ts-auto-guard ./src/Settings.ts && sed  -i 's/^import {/import type {/' ./src/Settings.guard.ts"
     },
     "keywords": [
         "obsidian",

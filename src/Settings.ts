@@ -1,6 +1,10 @@
 import cloneDeep from 'lodash.clonedeep';
 import * as Guards from './Settings.guard';
 
+// Typeguard functions for the interfaces below (to enable running, e.g.,
+// isPattern() on a JSON object). When the interfaces below change, these guard
+// functions can be regenerated with
+// 'yarn generate-typeguard-functions' (see package.json).
 export { Guards };
 
 /** @see {isSettings} ts-auto-guard:type-guard */
@@ -58,9 +62,9 @@ export const defaultSettings: Settings = {
 export interface Command {
     name: string;
     patternFilter: string;
-    selection: boolean;
-    lines: boolean;
-    document: boolean;
+    selection?: boolean;
+    lines?: boolean;
+    document?: boolean;
 }
 
 export const defaultCommandSettings: Command = {

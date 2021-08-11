@@ -673,7 +673,7 @@ export class SettingsTab extends PluginSettingTab {
                 .addToggle((toggle) => {
                     toggle
                         .setTooltip('Apply to Selection')
-                        .setValue(command.selection)
+                        .setValue(command.selection || false)
                         .onChange(async (value) => {
                             const newCommands = cloneDeep(
                                 getSettings().commands,
@@ -689,7 +689,7 @@ export class SettingsTab extends PluginSettingTab {
                 .addToggle((toggle) => {
                     toggle
                         .setTooltip('Apply to whole lines')
-                        .setValue(command.lines)
+                        .setValue(command.lines || false)
                         .onChange(async (value) => {
                             const newCommands = cloneDeep(
                                 getSettings().commands,
@@ -705,7 +705,7 @@ export class SettingsTab extends PluginSettingTab {
                 .addToggle((toggle) => {
                     toggle
                         .setTooltip('Apply to whole document')
-                        .setValue(command.document)
+                        .setValue(command.document || false)
                         .onChange(async (value) => {
                             const newCommands = cloneDeep(
                                 getSettings().commands,

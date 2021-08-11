@@ -90,14 +90,18 @@ Follow the steps below to install the plugin.
 ## Usage
 
 - Within a Pattern, rules execute sequentially. Thus, the output of Rule 1 is passed as input to Rule 2, and the output of Rule 2 is passed as input to Rule 3, etc. At the end of the set of rules, the final output is used to replace the text in the editor.
-- The plugin provides two commands:
+- The plugin provides three commands by default:
     - `Apply Patterns: Apply pattern to whole lines` will loop over each line that is selected in the editor, and apply the Pattern to the entirety of each line.
+    - - `Apply Patterns: Apply pattern to whole document` will apply the Pattern to the entire document, as one (potentially multi-line) string.
     - `Apply Patterns: Apply pattern to selection` will apply the Pattern to just the text selected in the editor, as one (potentially multi-line) string.
+    - In addition, you can set additional commands in the Settings tab.
 - Within the Settings tab:
     - Each rule can be disabled, moved up, and moved down in the pattern.
     - Clicking the information icon for a rule will open a Notice indicating whether the rule's `From` and `To` elements are valid.
     - Both the `From` and `To` text boxes can use `$1`, `$2`, etc. to refer to [capture groups](https://www.regular-expressions.info/refcapture.html) from the `From` box.
     - Both the `From` and `To` text boxes understand natural language dates (see below).
+    - Additional commands can be created from collections of Patterns. If a command only matches one Pattern, it will apply that Pattern when the command is run. If the command matches more than one Pattern, it will ask which Pattern to apply.
+      - Custom commands can be created to run on whole lines, the current selection, or the whole document.
 
 ### Dates
 

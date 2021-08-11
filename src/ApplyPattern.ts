@@ -159,7 +159,10 @@ export const applyPattern = (
                             rule.global ? 'g' : ''
                         }${rule.multiline ? 'm' : ''}${rule.sticky ? 's' : ''}`,
                     ),
-                    allRuleStringsValidated[ruleIndex].to,
+                    allRuleStringsValidated[ruleIndex].to
+                        .replace(/\\n/g, '\n')
+                        .replace(/\\t/g, '\t')
+                        .replace(/\\r/g, '\r'),
                 );
             });
             transaction.changes?.push({

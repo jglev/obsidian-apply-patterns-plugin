@@ -3,6 +3,7 @@ import { Notice, PluginSettingTab, Setting } from 'obsidian';
 import { validateRuleString } from 'ValidateRuleString';
 import {
     Command,
+    Guards,
     Pattern,
     PatternRule,
     clearSettings,
@@ -849,6 +850,26 @@ export class SettingsTab extends PluginSettingTab {
                             const newSettings: Pattern[] = JSON.parse(
                                 await navigator.clipboard.readText(),
                             );
+
+                            // Check the structure of the data to import:
+                            if (!Array.isArray(newSettings)) {
+                                throw 'Settings are not in array format.';
+                            }
+                            newSettings.forEach(
+                                (pattern: Pattern, patternIndex) => {
+                                    if (!Guards.isPattern(pattern)) {
+                                        throw `Pattern ${patternIndex} is not structured correctly.`;
+                                    }
+                                    pattern.rules.forEach(
+                                        (rule: PatternRule, ruleIndex) => {
+                                            if (!Guards.isPatternRule(rule)) {
+                                                throw `Rule ${ruleIndex} in Pattern ${patternIndex} is not structured correctly.`;
+                                            }
+                                        },
+                                    );
+                                },
+                            );
+
                             updateSettings({
                                 patterns: [
                                     ...getSettings().patterns,
@@ -907,6 +928,19 @@ export class SettingsTab extends PluginSettingTab {
                             const newSettings: Command[] = JSON.parse(
                                 await navigator.clipboard.readText(),
                             );
+
+                            // Check the structure of the data to import:
+                            if (!Array.isArray(newSettings)) {
+                                throw 'Settings are not in array format.';
+                            }
+                            newSettings.forEach(
+                                (command: Command, commandIndex) => {
+                                    if (!Guards.isCommand(command)) {
+                                        throw `Command ${commandIndex} is not structured correctly.`;
+                                    }
+                                },
+                            );
+
                             updateSettings({
                                 commands: [
                                     ...getSettings().commands,

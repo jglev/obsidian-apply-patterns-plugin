@@ -1,5 +1,9 @@
 import cloneDeep from 'lodash.clonedeep';
+import * as Guards from './Settings.guard';
 
+export { Guards };
+
+/** @see {isSettings} ts-auto-guard:type-guard */
 export interface Settings {
     patterns: Pattern[];
     filterString?: string;
@@ -8,6 +12,7 @@ export interface Settings {
     apiVersion?: number;
 }
 
+/** @see {isPattern} ts-auto-guard:type-guard */
 export interface Pattern {
     name: string;
     done: boolean;
@@ -20,6 +25,7 @@ export const defaultPatternSettings: Pattern = {
     rules: [],
 };
 
+/** @see {isPatternRule} ts-auto-guard:type-guard */
 export interface PatternRule {
     from: string;
     to: string;
@@ -48,6 +54,7 @@ export const defaultSettings: Settings = {
     apiVersion: 2,
 };
 
+/** @see {isCommand} ts-auto-guard:type-guard */
 export interface Command {
     name: string;
     patternFilter: string;

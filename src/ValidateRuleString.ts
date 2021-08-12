@@ -7,7 +7,13 @@ export const validateRuleString = (
     const dateMatches = [
         ...ruleString.matchAll(new RegExp(ruleDateRegexString, 'g')),
     ];
-    let updatedRuleString = ruleString;
+    let updatedRuleString = ruleString
+        // Because the plugin's settings are stored in JSON, characters like
+        // \n get double-escaped, and then do not get replaced automatically
+        // on use. This was causing To strings not to parse \n, etc.
+        .replace(/\\n/g, '\n')
+        .replace(/\\t/g, '\t')
+        .replace(/\\r/g, '\r');
     // Iterate over dateMatches backwards, in order to be able to make changes
     // to updatedRuleString in-place without affecting index numbers from
     // ruleString:

@@ -1,10 +1,10 @@
 {
-    "id": "obsidian-apply-patterns",
-    "name": "Apply Patterns",
-    "version": "1.1.1",
-    "minAppVersion": "0.12.10",
-    "description": "Apply custom patterns of find-and-replace in succession to text.",
-    "author": "Jacob Levernier",
-    "authorUrl": "https://github.com/publicus",
-    "isDesktopOnly": false
+  "id": "obsidian-apply-patterns",
+  "name": "Apply Patterns",
+  "version": "1.2.0",
+  "minAppVersion": "0.12.0",
+  "description": "Apply custom patterns of find-and-replace in succession to text.",
+  "author": "Jacob Levernier",
+  "authorUrl": "https://github.com/publicus",
+  "isDesktopOnly": false
 }

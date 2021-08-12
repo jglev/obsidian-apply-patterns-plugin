@@ -1,7 +1,7 @@
 import { Editor, Plugin, View } from 'obsidian';
 
 import { applyPattern } from './ApplyPattern';
-import { getSettings, updateSettings } from './Settings';
+import { Command, getSettings, updateSettings } from './Settings';
 import { SettingsTab } from './SettingsTab';
 
 export default class ApplyPatternsPlugin extends Plugin {
@@ -39,6 +39,63 @@ export default class ApplyPatternsPlugin extends Plugin {
                     'selection',
                 );
             },
+        });
+
+        this.addCommand({
+            id: 'apply-pattern-to-document',
+            name: 'Apply pattern to whole document',
+            editorCheckCallback: (
+                checking: boolean,
+                editor: Editor,
+                view: View,
+            ) => {
+                return applyPattern(
+                    checking,
+                    editor,
+                    view,
+                    this.app,
+                    'document',
+                );
+            },
+        });
+
+        const settingsCommands = getSettings().commands || [];
+        settingsCommands.forEach((command: Command, commandIndex) => {
+            if (command.patternFilter !== '') {
+                for (const [type, plainLanguage] of Object.entries({
+                    selection: 'selection',
+                    lines: 'whole lines',
+                    document: 'whole document',
+                })) {
+                    // Get TypeScript to understand type as a key, rather than
+                    // as a string. See https://stackoverflow.com/a/62438434
+                    // for an explanation.
+                    const commandTypeKey = type as keyof Command;
+                    if (command[commandTypeKey] === true) {
+                        this.addCommand({
+                            id: `apply-pattern-${commandIndex}-${type}`,
+                            name: `${
+                                command.name ||
+                                'Unnamed command ' + commandIndex
+                            } on ${plainLanguage}`,
+                            editorCheckCallback: (
+                                checking: boolean,
+                                editor: Editor,
+                                view: View,
+                            ) => {
+                                return applyPattern(
+                                    checking,
+                                    editor,
+                                    view,
+                                    this.app,
+                                    type,
+                                    command,
+                                );
+                            },
+                        });
+                    }
+                }
+            }
         });
     }
 

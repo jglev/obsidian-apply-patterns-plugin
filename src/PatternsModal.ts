@@ -1,17 +1,32 @@
 import { App, FuzzySuggestModal } from 'obsidian';
-import { Pattern, PatternRule, getSettings } from 'Settings';
+import { filterPatterns, formatPatternName } from './FilterPatterns';
+import type { Command } from 'Settings';
 
 export class PatternModal extends FuzzySuggestModal<number> {
     public readonly onChooseItem: (patternIndex: number) => void;
+    public readonly command?: Command;
 
     constructor({
         app,
         onChooseItem,
+        command,
     }: {
         app: App;
         onChooseItem: (patternIndex: number) => void;
+        command?: Command;
     }) {
         super(app);
+        this.command = command;
+        if (this.command !== undefined) {
+            this.setInstructions([
+                {
+                    command:
+                        command?.name ||
+                        `Unnamed Apply Patterns Command (${command?.patternFilter})`,
+                    purpose: '',
+                },
+            ]);
+        }
 
         this.onChooseItem = (patternIndex: number) => {
             onChooseItem(patternIndex);
@@ -25,24 +40,16 @@ export class PatternModal extends FuzzySuggestModal<number> {
     }
 
     getItems(): number[] {
-        const patterns = getSettings()
-            .patterns.filter(
-                (pattern: Pattern) =>
-                    pattern.rules.length > 0 &&
-                    pattern.rules.every(
-                        (rule: PatternRule) => rule.from !== '',
-                    ),
-            )
-            .map((_: Pattern, patternIndex: number) => {
-                return patternIndex;
-            });
-        return patterns;
+        const patternIndexes = filterPatterns(this.command);
+        // If there is only one pattern, run it without offering a selection:
+        if (this.command !== undefined && patternIndexes.length === 1) {
+            this.close();
+            this.onChooseItem(patternIndexes[0]);
+        }
+        return patternIndexes;
     }
 
     getItemText(patternIndex: number): string {
-        const patternName =
-            getSettings().patterns[patternIndex].name ||
-            `(Untitled Pattern ${patternIndex})`;
-        return patternName;
+        return formatPatternName(patternIndex);
     }
 }

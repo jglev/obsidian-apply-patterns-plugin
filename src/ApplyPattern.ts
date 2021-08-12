@@ -9,7 +9,7 @@ import {
 
 import { validateRuleString } from './ValidateRuleString';
 import { PatternModal } from './PatternsModal';
-import { getSettings } from './Settings';
+import { Command, getSettings } from './Settings';
 
 // import { PatternRule } from '../Settings';
 
@@ -18,7 +18,8 @@ export const applyPattern = (
     editor: Editor,
     view: View,
     app: App,
-    mode: 'lines' | 'selection' = 'lines',
+    mode: 'lines' | 'selection' | 'document' = 'lines',
+    command?: Command,
 ) => {
     if (checking) {
         // editorCallback always happens in a MarkdownView; the command should
@@ -137,6 +138,38 @@ export const applyPattern = (
             });
             transaction.replaceSelection = updatedSelection;
         }
+        if (mode === 'document') {
+            const editorLineCount = editor.lineCount();
+            const fullDocumentSelector = {
+                from: { line: 0, ch: 0 },
+                to: {
+                    line: editorLineCount,
+                    ch: editor.getLine(editorLineCount - 1).length,
+                },
+            };
+            let updatedDocument = editor.getRange(
+                fullDocumentSelector.from,
+                fullDocumentSelector.to,
+            );
+            pattern.rules.forEach((rule, ruleIndex) => {
+                updatedDocument = updatedDocument.replace(
+                    new RegExp(
+                        allRuleStringsValidated[ruleIndex].from,
+                        `u${rule.caseInsensitive ? 'i' : ''}${
+                            rule.global ? 'g' : ''
+                        }${rule.multiline ? 'm' : ''}${rule.sticky ? 's' : ''}`,
+                    ),
+                    allRuleStringsValidated[ruleIndex].to
+                        .replace(/\\n/g, '\n')
+                        .replace(/\\t/g, '\t')
+                        .replace(/\\r/g, '\r'),
+                );
+            });
+            transaction.changes?.push({
+                ...fullDocumentSelector,
+                text: updatedDocument,
+            });
+        }
 
         editor.transaction(transaction);
     };
@@ -145,6 +178,7 @@ export const applyPattern = (
     const patternModal = new PatternModal({
         app,
         onChooseItem,
+        command,
     });
     patternModal.open();
 };

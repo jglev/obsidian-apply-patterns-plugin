@@ -36,7 +36,8 @@ export function isPattern(obj: any, _argumentName?: string): obj is Pattern {
         Array.isArray(obj.rules) &&
         obj.rules.every((e: any) =>
             isPatternRule(e) as boolean
-        )
+        ) &&
+        typeof obj.collapsed === "boolean"
     )
 }
 

@@ -21,12 +21,14 @@ export interface Pattern {
     name: string;
     done: boolean;
     rules: PatternRule[];
+    collapsed: boolean;
 }
 
 export const defaultPatternSettings: Pattern = {
     name: '',
     done: false,
     rules: [],
+    collapsed: false,
 };
 
 /** @see {isPatternRule} ts-auto-guard:type-guard */
@@ -55,7 +57,7 @@ export const defaultSettings: Settings = {
     filterString: '',
     commandFilterString: '',
     commands: [],
-    apiVersion: 2,
+    apiVersion: 3,
 };
 
 /** @see {isCommand} ts-auto-guard:type-guard */

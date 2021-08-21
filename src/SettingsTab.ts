@@ -156,7 +156,124 @@ export class SettingsTab extends PluginSettingTab {
                         this.display();
                     });
             })
-            .setDesc('Filter patterns by name');
+            .setDesc('Filter patterns by name')
+            .addExtraButton((button) => {
+                const settings = getSettings();
+                const patternFilterString = settings.filterString;
+                const patterns = settings.patterns;
+
+                const visiblePatterns = patterns
+                    .map((pattern: Pattern, patternIndex) => {
+                        if (
+                            patternFilterString !== undefined &&
+                            patternFilterString !== ''
+                        ) {
+                            if (
+                                pattern.name
+                                    .toLowerCase()
+                                    .includes(patternFilterString.toLowerCase())
+                            ) {
+                                return {
+                                    index: patternIndex,
+                                    collapsed: pattern.collapsed === true,
+                                    pattern,
+                                };
+                            }
+                        } else {
+                            return {
+                                index: patternIndex,
+                                collapsed: pattern.collapsed === true,
+                                pattern,
+                            };
+                        }
+                        return null;
+                    })
+                    .filter((e) => e !== null);
+
+                const collapsedStatus = visiblePatterns.map(
+                    (e) => e !== null && e.collapsed === true,
+                );
+
+                button
+                    .setIcon('expand-vertically')
+                    .setTooltip(
+                        collapsedStatus.every((e) => e === true)
+                            ? 'Expand all'
+                            : 'Collapse all',
+                    )
+                    .onClick(async () => {
+                        const settings = getSettings();
+                        const patternFilterString = settings.filterString;
+                        const patterns = settings.patterns;
+
+                        const visiblePatterns = patterns
+                            .map((pattern: Pattern, patternIndex) => {
+                                if (
+                                    patternFilterString !== undefined &&
+                                    patternFilterString !== ''
+                                ) {
+                                    if (
+                                        pattern.name
+                                            .toLowerCase()
+                                            .includes(
+                                                patternFilterString.toLowerCase(),
+                                            )
+                                    ) {
+                                        return {
+                                            index: patternIndex,
+                                            collapsed:
+                                                pattern.collapsed === true,
+                                            pattern,
+                                        };
+                                    }
+                                } else {
+                                    return {
+                                        index: patternIndex,
+                                        collapsed: pattern.collapsed === true,
+                                        pattern,
+                                    };
+                                }
+                                return null;
+                            })
+                            .filter((e) => e !== null);
+
+                        const collapsedStatus = visiblePatterns.map(
+                            (e) => e !== null && e.collapsed === true,
+                        );
+
+                        if (collapsedStatus.every((e) => e === true)) {
+                            for (const visiblePattern of visiblePatterns) {
+                                if (visiblePattern !== null) {
+                                    settings.patterns[
+                                        visiblePattern.index
+                                    ].collapsed = false;
+                                }
+                            }
+                        } else if (collapsedStatus.some((e) => e === true)) {
+                            for (const visiblePattern of visiblePatterns) {
+                                if (visiblePattern !== null) {
+                                    settings.patterns[
+                                        visiblePattern.index
+                                    ].collapsed = true;
+                                }
+                            }
+                        } else {
+                            for (const visiblePattern of visiblePatterns) {
+                                if (visiblePattern !== null) {
+                                    settings.patterns[
+                                        visiblePattern.index
+                                    ].collapsed = true;
+                                }
+                            }
+                        }
+
+                        updateSettings({
+                            patterns: settings.patterns,
+                        });
+                        await this.plugin.saveSettings();
+                        this.display();
+                    });
+            });
 
         const patterns = getSettings().patterns;
         for (const [patternIndex, pattern] of patterns.entries()) {
@@ -200,6 +317,30 @@ export class SettingsTab extends PluginSettingTab {
                             });
 
                             await this.plugin.saveSettings();
+                        });
+                })
+                .addExtraButton((button) => {
+                    const updatedSettings =
+                        getSettings().patterns[patternIndex];
+                    button
+                        .setIcon('expand-vertically')
+                        .setTooltip(
+                            updatedSettings.collapsed !== false
+                                ? 'Expand'
+                                : 'Collapse',
+                        )
+                        .onClick(async () => {
+                            const newPatterns = cloneDeep(
+                                getSettings().patterns,
+                            );
+                            newPatterns[patternIndex].collapsed =
+                                !newPatterns[patternIndex].collapsed;
+                            updateSettings({
+                                patterns: newPatterns,
+                            });
+
+                            await this.plugin.saveSettings();
+                            this.display();
                         });
                 })
                 .addExtraButton((button) => {
@@ -260,8 +401,17 @@ export class SettingsTab extends PluginSettingTab {
                         });
                 });
 
-            const rulesEl = patternEl.createEl('div');
+            const patternRulesEl = patternEl.createEl('div');
+            patternRulesEl.addClass('pattern-rules');
+
+            const rulesEl = patternRulesEl.createEl('div');
             rulesEl.addClass('rules');
+
+            if (getSettings().patterns[patternIndex].collapsed === true) {
+                patternEl.addClass('collapsed');
+            } else {
+                patternEl.removeClass('collapsed');
+            }
 
             pattern.rules.forEach((rule: PatternRule, ruleIndex) => {
                 const ruleEl = rulesEl.createEl('div');
@@ -536,7 +686,7 @@ export class SettingsTab extends PluginSettingTab {
                     });
             });
 
-            const addRuleButtonEl = patternsEl.createDiv('add-rule-button');
+            const addRuleButtonEl = patternRulesEl.createDiv('add-rule-button');
 
             new Setting(addRuleButtonEl).addButton((button) => {
                 button

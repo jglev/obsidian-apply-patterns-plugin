@@ -78,6 +78,14 @@
     font-weight: bold;
 }
 
+.pattern.collapsed [aria-label="Expand"] {
+    color: green;
+}
+
+.pattern.collapsed .pattern-rules {
+    display: none;
+}
+
 .clear-settings-button.primed button {
     background-color: var(--background-modifier-error) !important;
     color: var(--text-on-accent) !important;

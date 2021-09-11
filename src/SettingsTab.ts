@@ -799,7 +799,7 @@ export class SettingsTab extends PluginSettingTab {
                                 getSettings().commands,
                             );
                             newCommands.splice(commandIndex, 1, {
-                                ...commands[commandIndex],
+                                ...newCommands[commandIndex],
                                 name: value,
                             });
                             updateSettings({
@@ -817,7 +817,7 @@ export class SettingsTab extends PluginSettingTab {
                                 getSettings().commands,
                             );
                             newCommands.splice(commandIndex, 1, {
-                                ...commands[commandIndex],
+                                ...newCommands[commandIndex],
                                 patternFilter: value,
                             });
                             updateSettings({

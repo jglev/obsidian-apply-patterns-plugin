@@ -345,7 +345,7 @@ export class SettingsTab extends PluginSettingTab {
                 })
                 .addExtraButton((button) => {
                     button
-                        .setIcon('moveRowUp')
+                        .setIcon('up-chevron-glyph')
                         .setTooltip('Move Pattern up')
                         .setDisabled(patternIndex === 0)
                         .onClick(async () => {
@@ -365,7 +365,7 @@ export class SettingsTab extends PluginSettingTab {
                 })
                 .addExtraButton((button) => {
                     button
-                        .setIcon('moveRowDown')
+                        .setIcon('down-chevron-glyph')
                         .setTooltip('Move Rule down')
                         .setDisabled(patternIndex === patterns.length - 1)
                         .onClick(async () => {
@@ -385,7 +385,7 @@ export class SettingsTab extends PluginSettingTab {
                 })
                 .addExtraButton((button) => {
                     button
-                        .setIcon('cross')
+                        .setIcon('cross-in-box')
                         .setTooltip('Delete pattern')
                         .onClick(async () => {
                             const newPatterns = cloneDeep(
@@ -622,7 +622,7 @@ export class SettingsTab extends PluginSettingTab {
                     })
                     .addExtraButton((button) => {
                         button
-                            .setIcon('moveRowUp')
+                            .setIcon('up-chevron-glyph')
                             .setTooltip('Move Rule up')
                             .setDisabled(ruleIndex === 0)
                             .onClick(async () => {
@@ -644,7 +644,7 @@ export class SettingsTab extends PluginSettingTab {
                     })
                     .addExtraButton((button) => {
                         button
-                            .setIcon('moveRowDown')
+                            .setIcon('down-chevron-glyph')
                             .setTooltip('Move Rule down')
                             .setDisabled(ruleIndex === pattern.rules.length - 1)
                             .onClick(async () => {
@@ -906,7 +906,7 @@ export class SettingsTab extends PluginSettingTab {
                 })
                 .addExtraButton((button) => {
                     button
-                        .setIcon('moveRowUp')
+                        .setIcon('up-chevron-glyph')
                         .setTooltip('Move Command up')
                         .setDisabled(commandIndex === 0)
                         .onClick(async () => {
@@ -926,7 +926,7 @@ export class SettingsTab extends PluginSettingTab {
                 })
                 .addExtraButton((button) => {
                     button
-                        .setIcon('moveRowDown')
+                        .setIcon('down-chevron-glyph')
                         .setTooltip('Move Rule down')
                         .setDisabled(commandIndex === commands.length - 1)
                         .onClick(async () => {

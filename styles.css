@@ -43,6 +43,10 @@
     font-weight: 600;
 }
 
+.checkbox-container {
+    min-width: 2em;
+}
+
 .commands .command .checkbox-container:nth-of-type(1)::after {
     content: "S";
 }

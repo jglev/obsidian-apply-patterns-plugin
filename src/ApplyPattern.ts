@@ -128,7 +128,11 @@ export const applyPattern = (
                 ch: newContentSplit[newContentSplit.length - 1].length,
             };
             transaction.selection = {
-                from: cursorFrom,
+                from:
+                    cursorTo.ch === cursorFrom.ch &&
+                    cursorTo.line === cursorFrom.line
+                        ? newContentEnd
+                        : cursorFrom,
                 to: newContentEnd,
             };
         }
@@ -160,7 +164,11 @@ export const applyPattern = (
                 ),
             };
             transaction.selection = {
-                from: cursorFrom,
+                from:
+                    cursorFrom.ch === cursorTo.ch &&
+                    cursorFrom.line === cursorTo.line
+                        ? newContentEnd
+                        : cursorFrom,
                 to: newContentEnd,
             };
         }

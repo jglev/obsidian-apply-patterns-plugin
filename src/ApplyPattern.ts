@@ -44,7 +44,6 @@ export const applyPattern = (
         const cursorTo = editor.getCursor('to');
         const minLine = cursorFrom.line;
         const maxLine = cursorTo.line;
-        const originalContent = editor.getSelection().split('\n');
 
         // Confirm that each rule's strings are valid:
         let allValid = true;
@@ -122,6 +121,16 @@ export const applyPattern = (
                 to: { line: maxLine, ch: editor.getLine(maxLine).length },
                 text: updatedLines.join('\n'),
             });
+
+            const newContentSplit = updatedLines.join('\n').split('\n');
+            const newContentEnd = {
+                line: minLine + newContentSplit.length - 1,
+                ch: newContentSplit[newContentSplit.length - 1].length,
+            };
+            transaction.selection = {
+                from: cursorFrom,
+                to: newContentEnd,
+            };
         }
 
         if (mode === 'selection') {
@@ -138,6 +147,16 @@ export const applyPattern = (
                 );
             });
             transaction.replaceSelection = updatedSelection;
+
+            const newContentSplit = updatedSelection.split('\n');
+            const newContentEnd = {
+                line: minLine + newContentSplit.length - 1,
+                ch: newContentSplit[newContentSplit.length - 1].length,
+            };
+            transaction.selection = {
+                from: cursorFrom,
+                to: newContentEnd,
+            };
         }
         if (mode === 'document') {
             const editorLineCount = editor.lineCount();
@@ -172,7 +191,7 @@ export const applyPattern = (
                 line: newContentSplit.length - 1,
                 ch: newContentSplit[newContentSplit.length - 1].length,
             };
-            transaction['selection'] = {
+            transaction.selection = {
                 from: newContentEnd,
                 to: newContentEnd,
             };

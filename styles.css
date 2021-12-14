@@ -44,8 +44,22 @@
 }
 
 .checkbox-container {
-    min-width: 2em;
+    width: 2.5em;
 }
+
+.pattern-rules button[aria-label="disable"],
+.pattern-rules div.setting-item-description {
+    max-width: 4em;
+}
+
+textarea {
+    min-width: 10em;
+}
+
+.pattern-rules button {
+    padding: 1em;
+}
+
 
 .commands .command .checkbox-container:nth-of-type(1)::after {
     content: "S";

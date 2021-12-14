@@ -26,7 +26,7 @@ For changes in each release, please check the releases page: https://github.com/
 ## Screenshots
 
 - *The theme is [Solarized Light](https://github.com/Slowbad/obsidian-solarized).*
-- *The theme has been enhanced for task management using [this CSS snippet](https://gist.github.com/publicus/30f289deb911cc8f8645c946e42f13a6). See [here](https://help.obsidian.md/Advanced+topics/Customizing+CSS) for instructions on incorporating CSS snippets in Obsidian.*
+- *The theme has been enhanced for task management using [this CSS snippet](https://gist.github.com/jglev/30f289deb911cc8f8645c946e42f13a6). See [here](https://help.obsidian.md/Advanced+topics/Customizing+CSS) for instructions on incorporating CSS snippets in Obsidian.*
 
 ![Example Usage for Task management](docs/img/example-task-management.gif)
 

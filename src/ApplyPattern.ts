@@ -44,6 +44,7 @@ export const applyPattern = (
         const cursorTo = editor.getCursor('to');
         const minLine = cursorFrom.line;
         const maxLine = cursorTo.line;
+        const originalContent = editor.getSelection().split('\n');
 
         // Confirm that each rule's strings are valid:
         let allValid = true;
@@ -166,6 +167,15 @@ export const applyPattern = (
                 ...fullDocumentSelector,
                 text: updatedDocument,
             });
+            const newContentSplit = updatedDocument.split('\n');
+            const newContentEnd = {
+                line: newContentSplit.length - 1,
+                ch: newContentSplit[newContentSplit.length - 1].length,
+            };
+            transaction['selection'] = {
+                from: newContentEnd,
+                to: newContentEnd,
+            };
         }
 
         editor.transaction(transaction);

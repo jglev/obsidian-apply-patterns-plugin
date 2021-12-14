@@ -71,6 +71,19 @@ textarea {
     content: "D";
 }
 
+.patterns .rule {
+    width: 100%;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    margin-bottom: 1em;
+}
+
+/* .patterns .rule * {
+    display: block;
+    float: left;
+    clear: both;
+} */
+
 .patterns .rule .checkbox-container:nth-of-type(1)::after {
     content: "i";
 }

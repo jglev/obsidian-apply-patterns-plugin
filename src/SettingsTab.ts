@@ -420,8 +420,11 @@ export class SettingsTab extends PluginSettingTab {
                     ruleEl.addClass('disabled');
                 }
 
-                new Setting(ruleEl)
-                    .setDesc(`Rule ${ruleIndex + 1}`)
+                const setting = new Setting(ruleEl).setDesc(
+                    `Rule ${ruleIndex + 1}`,
+                );
+
+                setting
                     .addButton((button) => {
                         button
                             .setIcon(

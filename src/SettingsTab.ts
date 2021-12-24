@@ -1,6 +1,6 @@
 import cloneDeep from 'lodash.clonedeep';
 import { Notice, PluginSettingTab, Setting } from 'obsidian';
-import { validateRuleString } from 'ValidateRuleString';
+import { validateRuleString } from './ValidateRuleString';
 import {
     Command,
     Guards,
@@ -588,6 +588,7 @@ export class SettingsTab extends PluginSettingTab {
                                     updatedRule.to,
                                     false,
                                 );
+                                console.log(587, updatedRule.to, toValidated);
                                 const noticeTimeoutSeconds = 1000 * 30; // 30 seconds
                                 if (!fromValidated.valid) {
                                     new Notice(

@@ -1,6 +1,6 @@
 import { App, FuzzySuggestModal } from 'obsidian';
 import { filterPatterns, formatPatternName } from './FilterPatterns';
-import type { Command } from 'Settings';
+import type { Command } from './Settings';
 
 export class PatternModal extends FuzzySuggestModal<number> {
     public readonly onChooseItem: (patternIndex: number) => void;

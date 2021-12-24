@@ -118,7 +118,10 @@ export const applyPattern = (
             }
             transaction.changes?.push({
                 from: { line: minLine, ch: 0 },
-                to: { line: maxLine, ch: editor.getLine(maxLine).length },
+                to: {
+                    line: maxLine,
+                    ch: updatedLines[updatedLines.length - 1].length,
+                },
                 text: updatedLines.join('\n'),
             });
 
@@ -155,12 +158,12 @@ export const applyPattern = (
             const newContentSplit = updatedSelection.split('\n');
             const newContentEnd = {
                 line: minLine + newContentSplit.length - 1,
-                ch: Math.min(
-                    editor.getSelection().split('\n')[
-                        editor.getSelection().split('\n').length - 1
-                    ].length -
-                        (editor.getLine(cursorTo.line).length - cursorTo.ch),
-                    newContentSplit[newContentSplit.length - 1].length,
+                ch: Math.max(
+                    // newContentSplit[newContentSplit.length - 1]),
+                    editor.getLine(maxLine).length -
+                        cursorTo.ch +
+                        (newContentSplit[newContentSplit.length - 1].length -
+                            editor.getLine(maxLine).length),
                 ),
             };
             transaction.selection = {

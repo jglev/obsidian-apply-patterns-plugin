@@ -13,16 +13,13 @@ export function isSettings(obj: any, _argumentName?: string): obj is Settings {
         obj.patterns.every((e: any) =>
             isPattern(e) as boolean
         ) &&
-        (typeof obj.filterString === "undefined" ||
-            typeof obj.filterString === "string") &&
-        (typeof obj.commandFilterString === "undefined" ||
-            typeof obj.commandFilterString === "string") &&
+        typeof obj.filterString === "string" &&
+        typeof obj.commandFilterString === "string" &&
         Array.isArray(obj.commands) &&
         obj.commands.every((e: any) =>
             isCommand(e) as boolean
         ) &&
-        (typeof obj.apiVersion === "undefined" ||
-            typeof obj.apiVersion === "number")
+        typeof obj.apiVersion === "number"
     )
 }
 
@@ -52,9 +49,7 @@ export function isPatternRule(obj: any, _argumentName?: string): obj is PatternR
         typeof obj.global === "boolean" &&
         typeof obj.multiline === "boolean" &&
         typeof obj.sticky === "boolean" &&
-        (typeof obj.disabled === "undefined" ||
-            obj.disabled === false ||
-            obj.disabled === true)
+        typeof obj.disabled === "boolean"
     )
 }
 
@@ -65,14 +60,8 @@ export function isCommand(obj: any, _argumentName?: string): obj is Command {
             typeof obj === "function") &&
         typeof obj.name === "string" &&
         typeof obj.patternFilter === "string" &&
-        (typeof obj.selection === "undefined" ||
-            obj.selection === false ||
-            obj.selection === true) &&
-        (typeof obj.lines === "undefined" ||
-            obj.lines === false ||
-            obj.lines === true) &&
-        (typeof obj.document === "undefined" ||
-            obj.document === false ||
-            obj.document === true)
+        typeof obj.selection === "boolean" &&
+        typeof obj.lines === "boolean" &&
+        typeof obj.document === "boolean"
     )
 }

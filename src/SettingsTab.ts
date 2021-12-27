@@ -135,148 +135,152 @@ export class SettingsTab extends PluginSettingTab {
         });
 
         new Setting(patternsEl)
-            .addText((text) => {
-                const settings = getSettings();
-                text.setValue(settings.filterString || '').onChange(
-                    async (value) => {
-                        updateSettings({
-                            ...cloneDeep(getSettings()),
-                            filterString: value,
-                        });
+			.setName('Filter patterns by name')
+			.addText((text) => {
+				const settings = getSettings();
+				text.setValue(settings.filterString || '').onChange(
+					async (value) => {
+						updateSettings({
+							...cloneDeep(getSettings()),
+							filterString: value,
+						});
 
-                        await this.plugin.saveSettings();
-                    },
-                );
-            })
-            .addButton((button) => {
-                button
-                    .setIcon('magnifying-glass')
-                    .setTooltip('Filter Patterns')
-                    .onClick(async () => {
-                        this.display();
-                    });
-            })
-            .setDesc('Filter patterns by name')
-            .addExtraButton((button) => {
-                const settings = getSettings();
-                const patternFilterString = settings.filterString;
-                const patterns = settings.patterns;
+						await this.plugin.saveSettings();
+					},
+				);
+			});
 
-                const visiblePatterns = patterns
-                    .map((pattern: Pattern, patternIndex) => {
-                        if (
-                            patternFilterString !== undefined &&
-                            patternFilterString !== ''
-                        ) {
-                            if (
-                                pattern.name
-                                    .toLowerCase()
-                                    .includes(patternFilterString.toLowerCase())
-                            ) {
-                                return {
-                                    index: patternIndex,
-                                    collapsed: pattern.collapsed === true,
-                                    pattern,
-                                };
-                            }
-                        } else {
-                            return {
-                                index: patternIndex,
-                                collapsed: pattern.collapsed === true,
-                                pattern,
-                            };
-                        }
-                        return null;
-                    })
-                    .filter((e) => e !== null);
+		new Setting(patternsEl).setName('Apply filter').addButton((button) => {
+			button
+				.setIcon('magnifying-glass')
+				.setTooltip('Filter Patterns')
+				.onClick(async () => {
+					this.display();
+				});
+		});
 
-                const collapsedStatus = visiblePatterns.map(
-                    (e) => e !== null && e.collapsed === true,
-                );
+		new Setting(patternsEl)
+			.setName('Expand / Collapse all patterns')
+			.addExtraButton((button) => {
+				const settings = getSettings();
+				const patternFilterString = settings.filterString;
+				const patterns = settings.patterns;
 
-                button
-                    .setIcon('expand-vertically')
-                    .setTooltip(
-                        collapsedStatus.every((e) => e === true)
-                            ? 'Expand all'
-                            : 'Collapse all',
-                    )
-                    .onClick(async () => {
-                        const settings = getSettings();
-                        const patternFilterString = settings.filterString;
-                        const patterns = settings.patterns;
+				const visiblePatterns = patterns
+					.map((pattern: Pattern, patternIndex) => {
+						if (
+							patternFilterString !== undefined &&
+							patternFilterString !== ''
+						) {
+							if (
+								pattern.name
+									.toLowerCase()
+									.includes(patternFilterString.toLowerCase())
+							) {
+								return {
+									index: patternIndex,
+									collapsed: pattern.collapsed === true,
+									pattern,
+								};
+							}
+						} else {
+							return {
+								index: patternIndex,
+								collapsed: pattern.collapsed === true,
+								pattern,
+							};
+						}
+						return null;
+					})
+					.filter((e) => e !== null);
 
-                        const visiblePatterns = patterns
-                            .map((pattern: Pattern, patternIndex) => {
-                                if (
-                                    patternFilterString !== undefined &&
-                                    patternFilterString !== ''
-                                ) {
-                                    if (
-                                        pattern.name
-                                            .toLowerCase()
-                                            .includes(
-                                                patternFilterString.toLowerCase(),
-                                            )
-                                    ) {
-                                        return {
-                                            index: patternIndex,
-                                            collapsed:
-                                                pattern.collapsed === true,
-                                            pattern,
-                                        };
-                                    }
-                                } else {
-                                    return {
-                                        index: patternIndex,
-                                        collapsed: pattern.collapsed === true,
-                                        pattern,
-                                    };
-                                }
-                                return null;
-                            })
-                            .filter((e) => e !== null);
+				const collapsedStatus = visiblePatterns.map(
+					(e) => e !== null && e.collapsed === true,
+				);
 
-                        const collapsedStatus = visiblePatterns.map(
-                            (e) => e !== null && e.collapsed === true,
-                        );
+				button
+					.setIcon('expand-vertically')
+					.setTooltip(
+						collapsedStatus.every((e) => e === true)
+							? 'Expand all'
+							: 'Collapse all',
+					)
+					.onClick(async () => {
+						const settings = getSettings();
+						const patternFilterString = settings.filterString;
+						const patterns = settings.patterns;
 
-                        if (collapsedStatus.every((e) => e === true)) {
-                            for (const visiblePattern of visiblePatterns) {
-                                if (visiblePattern !== null) {
-                                    settings.patterns[
-                                        visiblePattern.index
-                                    ].collapsed = false;
-                                }
-                            }
-                        } else if (collapsedStatus.some((e) => e === true)) {
-                            for (const visiblePattern of visiblePatterns) {
-                                if (visiblePattern !== null) {
-                                    settings.patterns[
-                                        visiblePattern.index
-                                    ].collapsed = true;
-                                }
-                            }
-                        } else {
-                            for (const visiblePattern of visiblePatterns) {
-                                if (visiblePattern !== null) {
-                                    settings.patterns[
-                                        visiblePattern.index
-                                    ].collapsed = true;
-                                }
-                            }
-                        }
+						const visiblePatterns = patterns
+							.map((pattern: Pattern, patternIndex) => {
+								if (
+									patternFilterString !== undefined &&
+									patternFilterString !== ''
+								) {
+									if (
+										pattern.name
+											.toLowerCase()
+											.includes(
+												patternFilterString.toLowerCase(),
+											)
+									) {
+										return {
+											index: patternIndex,
+											collapsed:
+												pattern.collapsed === true,
+											pattern,
+										};
+									}
+								} else {
+									return {
+										index: patternIndex,
+										collapsed: pattern.collapsed === true,
+										pattern,
+									};
+								}
+								return null;
+							})
+							.filter((e) => e !== null);
 
-                        updateSettings({
-                            patterns: settings.patterns,
-                        });
-                        await this.plugin.saveSettings();
-                        this.display();
-                    });
-            });
+						const collapsedStatus = visiblePatterns.map(
+							(e) => e !== null && e.collapsed === true,
+						);
 
-        const patterns = getSettings().patterns;
-        for (const [patternIndex, pattern] of patterns.entries()) {
+						if (collapsedStatus.every((e) => e === true)) {
+							for (const visiblePattern of visiblePatterns) {
+								if (visiblePattern !== null) {
+									settings.patterns[
+										visiblePattern.index
+									].collapsed = false;
+								}
+							}
+						} else if (collapsedStatus.some((e) => e === true)) {
+							for (const visiblePattern of visiblePatterns) {
+								if (visiblePattern !== null) {
+									settings.patterns[
+										visiblePattern.index
+									].collapsed = true;
+								}
+							}
+						} else {
+							for (const visiblePattern of visiblePatterns) {
+								if (visiblePattern !== null) {
+									settings.patterns[
+										visiblePattern.index
+									].collapsed = true;
+								}
+							}
+						}
+
+						updateSettings({
+							patterns: settings.patterns,
+						});
+						await this.plugin.saveSettings();
+						this.display();
+					});
+			});
+
+		const patterns = getSettings().patterns;
+		for (const [patternIndex, pattern] of patterns.entries()) {
 			const settings = getSettings();
 			const patternFilterString = settings.filterString;
 			if (
@@ -297,11 +301,7 @@ export class SettingsTab extends PluginSettingTab {
 
 			patternEl.createEl('h3', { text: `Pattern ${patternIndex + 1}` });
 
-			const patternName = patternEl.createEl('div', {
-				cls: 'pattern-name',
-			});
-
-			new Setting(patternName).setName('Pattern name').addText((text) => {
+			new Setting(patternEl).setName('Pattern name').addText((text) => {
 				text.setPlaceholder('')
 					.setValue(pattern.name)
 					.onChange(async (value) => {
@@ -317,6 +317,9 @@ export class SettingsTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					});
 			});
+
+			let deletePatternPrimed = false;
+			let patternDeletePrimerTimer: ReturnType<typeof setTimeout> | null;
 
 			new Setting(patternEl)
 				.setName('Pattern meta controls')
@@ -365,16 +368,38 @@ export class SettingsTab extends PluginSettingTab {
 						.setIcon('cross-in-box')
 						.setTooltip('Delete pattern')
 						.onClick(async () => {
-							const newPatterns = cloneDeep(
-								getSettings().patterns,
-							);
-							newPatterns.splice(patternIndex, 1);
-							updateSettings({
-								patterns: newPatterns,
-							});
+							if (patternDeletePrimerTimer) {
+								clearTimeout(patternDeletePrimerTimer);
+							}
+							if (deletePatternPrimed === true) {
+								const newPatterns = cloneDeep(
+									getSettings().patterns,
+								);
+								newPatterns.splice(patternIndex, 1);
+								updateSettings({
+									patterns: newPatterns,
+								});
 
-							await this.plugin.saveSettings();
-							this.display();
+								await this.plugin.saveSettings();
+								this.display();
+								return;
+							}
+
+							patternDeletePrimerTimer = setTimeout(
+								() => {
+									deletePatternPrimed = false;
+									patternEl.removeClass('primed');
+								},
+								1000 * 4, // 4 second timeout
+							);
+							deletePatternPrimed = true;
+							patternEl.addClass('primed');
+
+							new Notice(
+								`Click again to delete Pattern ${
+									patternIndex + 1
+								}`,
+							);
 						});
 				})
 				.addExtraButton((button) => {
@@ -480,7 +505,8 @@ export class SettingsTab extends PluginSettingTab {
 					});
 
 				new Setting(ruleEl)
-					.setName('Regex Modes')
+					.setName('Case-insensitive')
+					.setDesc('Regex mode')
 					.addToggle((toggle) => {
 						toggle
 							.setTooltip('Case-insensitive')
@@ -498,7 +524,11 @@ export class SettingsTab extends PluginSettingTab {
 
 								await this.plugin.saveSettings();
 							});
-					})
+					});
+
+				new Setting(ruleEl)
+					.setName('Global')
+					.setDesc('Regex mode')
 					.addToggle((toggle) => {
 						toggle
 							.setTooltip('Global')
@@ -516,7 +546,11 @@ export class SettingsTab extends PluginSettingTab {
 
 								await this.plugin.saveSettings();
 							});
-					})
+					});
+
+				new Setting(ruleEl)
+					.setName('Multiline')
+					.setDesc('Regex mode')
 					.addToggle((toggle) => {
 						toggle
 							.setTooltip('Multiline')
@@ -534,7 +568,10 @@ export class SettingsTab extends PluginSettingTab {
 
 								await this.plugin.saveSettings();
 							});
-					})
+					});
+				new Setting(ruleEl)
+					.setName('Sticky')
+					.setDesc('Regex mode')
 					.addToggle((toggle) => {
 						toggle
 							.setTooltip('Sticky')
@@ -580,6 +617,9 @@ export class SettingsTab extends PluginSettingTab {
 								await this.plugin.saveSettings();
 							});
 					});
+
+				let deleteRulePrimed = false;
+				let ruleDeletePrimerTimer: ReturnType<typeof setTimeout> | null;
 
 				new Setting(ruleEl)
 					.setName('Rule meta controls')
@@ -685,19 +725,41 @@ export class SettingsTab extends PluginSettingTab {
 							.setIcon('cross-in-box')
 							.setTooltip('Delete rule')
 							.onClick(async () => {
-								const newPatterns = cloneDeep(
-									getSettings().patterns,
-								);
-								newPatterns[patternIndex].rules.splice(
-									ruleIndex,
-									1,
-								);
-								updateSettings({
-									patterns: newPatterns,
-								});
+								if (ruleDeletePrimerTimer) {
+									clearTimeout(ruleDeletePrimerTimer);
+								}
+								if (deleteRulePrimed === true) {
+									const newPatterns = cloneDeep(
+										getSettings().patterns,
+									);
+									newPatterns[patternIndex].rules.splice(
+										ruleIndex,
+										1,
+									);
+									updateSettings({
+										patterns: newPatterns,
+									});
 
-								await this.plugin.saveSettings();
-								this.display();
+									await this.plugin.saveSettings();
+									this.display();
+									return;
+								}
+
+								ruleDeletePrimerTimer = setTimeout(
+									() => {
+										deleteRulePrimed = false;
+										ruleEl.removeClass('primed');
+									},
+									1000 * 4, // 4 second timeout
+								);
+								deleteRulePrimed = true;
+								ruleEl.addClass('primed');
+
+								new Notice(
+									`Click again to delete Rule ${
+										ruleIndex + 1
+									}`,
+								);
 							});
 					});
 			});
@@ -706,7 +768,7 @@ export class SettingsTab extends PluginSettingTab {
 
 			new Setting(addRuleButtonEl).addButton((button) => {
 				button
-					.setButtonText('Add find/replace rule')
+					.setButtonText('Add find / replace rule')
 					.setClass('add-rule-button')
 					.onClick(async () => {
 						const newPatterns = cloneDeep(getSettings().patterns);
@@ -762,6 +824,7 @@ export class SettingsTab extends PluginSettingTab {
 		);
 
 		new Setting(commandsEl)
+			.setName('Filter commands by name')
 			.addText((text) => {
 				const settings = getSettings();
 				text.setValue(settings.commandFilterString || '').onChange(
@@ -774,16 +837,16 @@ export class SettingsTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					},
 				);
-			})
-			.addButton((button) => {
-				button
-					.setIcon('magnifying-glass')
-					.setTooltip('Filter Commands')
-					.onClick(async () => {
-						this.display();
-					});
-			})
-			.setName('Filter commands by name');
+			});
+
+		new Setting(commandsEl).setName('Apply filter').addButton((button) => {
+			button
+				.setIcon('magnifying-glass')
+				.setTooltip('Filter Commands')
+				.onClick(async () => {
+					this.display();
+				});
+		});
 
 		const commands = getSettings().commands;
 		for (const [commandIndex, command] of commands.entries()) {
@@ -805,10 +868,12 @@ export class SettingsTab extends PluginSettingTab {
 			const commandEl = commandsEl.createEl('div');
 			commandEl.addClass('command');
 
+			commandEl.createEl('h3', { text: `Command ${commandIndex + 1}` });
+
 			new Setting(commandEl)
-				.setName(`Command ${commandIndex + 1}`)
+				.setName('Command Palette name')
 				.addText((text) => {
-					text.setPlaceholder('Command Palette name')
+					text.setPlaceholder('')
 						.setValue(command.name)
 						.onChange(async (value) => {
 							const newCommands = cloneDeep(
@@ -826,74 +891,8 @@ export class SettingsTab extends PluginSettingTab {
 						});
 				});
 
-			new Setting(commandEl).addText((text) => {
-				text.setPlaceholder('Pattern name filter')
-					.setValue(command.patternFilter)
-					.onChange(async (value) => {
-						const newCommands = cloneDeep(getSettings().commands);
-						newCommands.splice(commandIndex, 1, {
-							...newCommands[commandIndex],
-							patternFilter: value,
-						});
-						updateSettings({
-							commands: newCommands,
-						});
-
-						await this.plugin.saveSettings();
-					});
-			});
-
 			new Setting(commandEl)
-				.addToggle((toggle) => {
-					toggle
-						.setTooltip('Apply to Selection')
-						.setValue(command.selection || false)
-						.onChange(async (value) => {
-							const newCommands = cloneDeep(
-								getSettings().commands,
-							);
-							newCommands[commandIndex].selection = value;
-							updateSettings({
-								commands: newCommands,
-							});
-
-							await this.plugin.saveSettings();
-						});
-				})
-				.addToggle((toggle) => {
-					toggle
-						.setTooltip('Apply to whole lines')
-						.setValue(command.lines || false)
-						.onChange(async (value) => {
-							const newCommands = cloneDeep(
-								getSettings().commands,
-							);
-							newCommands[commandIndex].lines = value;
-							updateSettings({
-								commands: newCommands,
-							});
-
-							await this.plugin.saveSettings();
-						});
-				})
-				.addToggle((toggle) => {
-					toggle
-						.setTooltip('Apply to whole document')
-						.setValue(command.document || false)
-						.onChange(async (value) => {
-							const newCommands = cloneDeep(
-								getSettings().commands,
-							);
-							newCommands[commandIndex].document = value;
-							updateSettings({
-								commands: newCommands,
-							});
-
-							await this.plugin.saveSettings();
-						});
-				});
-
-			new Setting(commandEl)
+				.setName('Command meta controls')
 				.addExtraButton((button) => {
 					button
 						.setIcon('info')
@@ -965,7 +964,7 @@ export class SettingsTab extends PluginSettingTab {
 				})
 				.addExtraButton((button) => {
 					button
-						.setIcon('cross')
+						.setIcon('cross-in-box')
 						.setTooltip('Delete command')
 						.onClick(async () => {
 							const newCommands = cloneDeep(
@@ -980,233 +979,302 @@ export class SettingsTab extends PluginSettingTab {
 							this.display();
 						});
 				});
+
+			new Setting(commandEl)
+				.setName('Pattern name filter')
+				.addText((text) => {
+					text.setPlaceholder('')
+						.setValue(command.patternFilter)
+						.onChange(async (value) => {
+							const newCommands = cloneDeep(
+								getSettings().commands,
+							);
+							newCommands.splice(commandIndex, 1, {
+								...newCommands[commandIndex],
+								patternFilter: value,
+							});
+							updateSettings({
+								commands: newCommands,
+							});
+
+							await this.plugin.saveSettings();
+						});
+				});
+
+			new Setting(commandEl)
+				.setName('Apply to selection')
+				.addToggle((toggle) => {
+					toggle
+						.setTooltip('Apply to selection')
+						.setValue(command.selection || false)
+						.onChange(async (value) => {
+							const newCommands = cloneDeep(
+								getSettings().commands,
+							);
+							newCommands[commandIndex].selection = value;
+							updateSettings({
+								commands: newCommands,
+							});
+
+							await this.plugin.saveSettings();
+						});
+				});
+			new Setting(commandEl)
+				.setName('Apply to whole lines')
+				.addToggle((toggle) => {
+					toggle
+						.setTooltip('Apply to whole lines')
+						.setValue(command.lines || false)
+						.onChange(async (value) => {
+							const newCommands = cloneDeep(
+								getSettings().commands,
+							);
+							newCommands[commandIndex].lines = value;
+							updateSettings({
+								commands: newCommands,
+							});
+
+							await this.plugin.saveSettings();
+						});
+				});
+
+			new Setting(commandEl)
+				.setName('Apply to whole document')
+				.addToggle((toggle) => {
+					toggle
+						.setTooltip('Apply to whole document')
+						.setValue(command.document || false)
+						.onChange(async (value) => {
+							const newCommands = cloneDeep(
+								getSettings().commands,
+							);
+							newCommands[commandIndex].document = value;
+							updateSettings({
+								commands: newCommands,
+							});
+
+							await this.plugin.saveSettings();
+						});
+				});
 		}
 
-        const addCommandButtonEl = commandsEl.createEl('div', {
-            cls: 'add-command-button-el',
-        });
+		const addCommandButtonEl = commandsEl.createEl('div', {
+			cls: 'add-command-button-el',
+		});
 
-        new Setting(addCommandButtonEl).addButton((button) => {
-            button
-                .setButtonText('Add command')
-                .setClass('add-command-button')
-                .onClick(async () => {
-                    updateSettings({
-                        commands: [
-                            ...getSettings().commands,
-                            {
-                                ...defaultCommandSettings,
-                            },
-                        ],
-                    });
-                    await this.plugin.saveSettings();
-                    this.display();
-                });
-        });
+		new Setting(addCommandButtonEl).addButton((button) => {
+			button
+				.setButtonText('Add command')
+				.setClass('add-command-button')
+				.onClick(async () => {
+					updateSettings({
+						commands: [
+							...getSettings().commands,
+							{
+								...defaultCommandSettings,
+							},
+						],
+					});
+					await this.plugin.saveSettings();
+					this.display();
+				});
+		});
 
-        const importExportEl = containerEl.createDiv();
-        importExportEl.addClass('import-export-div');
-        importExportEl.createEl('h2', {
-            text: 'Import / Export / Clear',
-        });
-        importExportEl.createEl('h3', {
-            text: 'Patterns',
-        });
-        new Setting(importExportEl)
-            .setDesc(
-                'You can import and export patterns as JSON through the clipboard, in order to more readily share patterns with other users.',
-            )
-            .addButton((button) => {
-                button
-                    // .setIcon('right-arrow-with-tail')
-                    .setButtonText('Import from clipboard')
-                    .setClass('import-pattern-button')
-                    .onClick(async () => {
-                        try {
-                            const newSettings: Pattern[] = JSON.parse(
-                                await navigator.clipboard.readText(),
-                            );
+		const importExportEl = containerEl.createDiv();
+		importExportEl.addClass('import-export-div');
+		importExportEl.createEl('h2', {
+			text: 'Import / Export / Clear',
+		});
+		importExportEl.createEl('h3', {
+			text: 'Patterns',
+		});
+		importExportEl.createEl('p', {
+			text: 'You can import and export patterns as JSON through the clipboard, in order to more readily share patterns with other users.',
+		});
+		new Setting(importExportEl)
+			.setName('Import patterns from clipboard')
+			.addButton((button) => {
+				button
+					// .setIcon('right-arrow-with-tail')
+					.setButtonText('Import')
+					.onClick(async () => {
+						try {
+							const newSettings: Pattern[] = JSON.parse(
+								await navigator.clipboard.readText(),
+							);
 
-                            // Check the structure of the data to import:
-                            if (!Array.isArray(newSettings)) {
-                                throw 'Settings are not in array format.';
-                            }
-                            newSettings.forEach(
-                                (pattern: Pattern, patternIndex) => {
-                                    if (!Guards.isPattern(pattern)) {
-                                        throw `Pattern ${patternIndex} is not structured correctly.`;
-                                    }
-                                    pattern.rules.forEach(
-                                        (rule: PatternRule, ruleIndex) => {
-                                            if (!Guards.isPatternRule(rule)) {
-                                                throw `Rule ${ruleIndex} in Pattern ${patternIndex} is not structured correctly.`;
-                                            }
-                                        },
-                                    );
-                                },
-                            );
+							// Check the structure of the data to import:
+							if (!Array.isArray(newSettings)) {
+								throw 'Settings are not in array format.';
+							}
+							newSettings.forEach(
+								(pattern: Pattern, patternIndex) => {
+									if (!Guards.isPattern(pattern)) {
+										throw `Pattern ${patternIndex} is not structured correctly.`;
+									}
+									pattern.rules.forEach(
+										(rule: PatternRule, ruleIndex) => {
+											if (!Guards.isPatternRule(rule)) {
+												throw `Rule ${ruleIndex} in Pattern ${patternIndex} is not structured correctly.`;
+											}
+										},
+									);
+								},
+							);
 
-                            updateSettings({
-                                patterns: [
-                                    ...getSettings().patterns,
-                                    ...newSettings,
-                                ],
-                            });
-                            await this.plugin.saveSettings();
-                            this.display();
-                            new Notice(
-                                'Imported pattern settings from clipboard!',
-                            );
-                        } catch (error) {
-                            new Notice(
-                                'Error importing pattern settings from clipboard. See developer console for more information.',
-                            );
-                            console.log(error);
-                        }
-                    });
-            })
-            .addButton((button) => {
-                button
-                    // .setIcon('right-arrow-with-tail')
-                    .setButtonText('Export to clipboard')
-                    .setClass('export-pattern-button')
-                    .onClick(async () => {
-                        try {
-                            const settings = getSettings().patterns;
-                            await navigator.clipboard.writeText(
-                                JSON.stringify(settings, null, 2),
-                            );
-                            new Notice(
-                                'Copied pattern settings as JSON to clipboard!',
-                            );
-                        } catch (error) {
-                            new Notice(
-                                'Error copying pattern settings as JSON to clipboard. See developer console for more information.',
-                            );
-                            console.log(error);
-                        }
-                    });
-            });
-        importExportEl.createEl('h3', {
-            text: 'Commands',
-        });
-        new Setting(importExportEl)
-            .setDesc(
-                'You can import and export commands as JSON through the clipboard, in order to more readily share commands with other users.',
-            )
-            .addButton((button) => {
-                button
-                    // .setIcon('right-arrow-with-tail')
-                    .setButtonText('Import from clipboard')
-                    .setClass('import-command-button')
-                    .onClick(async () => {
-                        try {
-                            const newSettings: Command[] = JSON.parse(
-                                await navigator.clipboard.readText(),
-                            );
+							updateSettings({
+								patterns: [
+									...getSettings().patterns,
+									...newSettings,
+								],
+							});
+							await this.plugin.saveSettings();
+							this.display();
+							new Notice(
+								'Imported pattern settings from clipboard!',
+							);
+						} catch (error) {
+							new Notice(
+								'Error importing pattern settings from clipboard. See developer console for more information.',
+							);
+							console.log(error);
+						}
+					});
+			});
 
-                            // Check the structure of the data to import:
-                            if (!Array.isArray(newSettings)) {
-                                throw 'Settings are not in array format.';
-                            }
-                            newSettings.forEach(
-                                (command: Command, commandIndex) => {
-                                    if (!Guards.isCommand(command)) {
-                                        throw `Command ${commandIndex} is not structured correctly.`;
-                                    }
-                                },
-                            );
+		new Setting(importExportEl)
+			.setName('Export patterns to clipboard')
+			.addButton((button) => {
+				button.setButtonText('Export').onClick(async () => {
+					try {
+						const settings = getSettings().patterns;
+						await navigator.clipboard.writeText(
+							JSON.stringify(settings, null, 2),
+						);
+						new Notice(
+							'Copied pattern settings as JSON to clipboard!',
+						);
+					} catch (error) {
+						new Notice(
+							'Error copying pattern settings as JSON to clipboard. See developer console for more information.',
+						);
+						console.log(error);
+					}
+				});
+			});
+		importExportEl.createEl('h3', {
+			text: 'Commands',
+		});
+		importExportEl.createEl('p', {
+			text: 'You can import and export commands as JSON through the clipboard, in order to more readily share commands with other users.',
+		});
 
-                            updateSettings({
-                                commands: [
-                                    ...getSettings().commands,
-                                    ...newSettings,
-                                ],
-                            });
-                            await this.plugin.saveSettings();
-                            this.display();
-                            new Notice(
-                                'Imported command settings from clipboard!',
-                            );
-                        } catch (error) {
-                            new Notice(
-                                'Error importing command settings from clipboard. See developer console for more information.',
-                            );
-                            console.log(error);
-                        }
-                    });
-            })
-            .addButton((button) => {
-                button
-                    // .setIcon('right-arrow-with-tail')
-                    .setButtonText('Export to clipboard')
-                    .setClass('export-command-button')
-                    .onClick(async () => {
-                        try {
-                            const settings = getSettings().commands;
-                            await navigator.clipboard.writeText(
-                                JSON.stringify(settings, null, 2),
-                            );
-                            new Notice(
-                                'Copied command settings as JSON to clipboard!',
-                            );
-                        } catch (error) {
-                            new Notice(
-                                'Error copying command settings as JSON to clipboard. See developer console for more information.',
-                            );
-                            console.log(error);
-                        }
-                    });
-            });
+		new Setting(importExportEl)
+			.setName('Import commands from clipboard')
+			.addButton((button) => {
+				button.setButtonText('Import').onClick(async () => {
+					try {
+						const newSettings: Command[] = JSON.parse(
+							await navigator.clipboard.readText(),
+						);
 
-        importExportEl.createEl('h3', {
-            text: 'Clear all',
-        });
-        let clearAllSettingsPrimed = false;
-        let primerTimer: ReturnType<typeof setTimeout> | null;
-        const clearButtonEl = importExportEl.createEl('span');
-        clearButtonEl.addClass('clear-settings-button');
-        new Setting(clearButtonEl)
-            .setDesc('Clear and reset all patterns and commands.')
-            .addButton((button) => {
-                button
-                    .setButtonText('Clear all settings for this plugin')
-                    .onClick(async () => {
-                        if (primerTimer) {
-                            clearTimeout(primerTimer);
-                        }
-                        if (clearAllSettingsPrimed === true) {
-                            const settingsBackup = cloneDeep(getSettings());
-                            try {
-                                clearSettings();
-                                await this.plugin.saveSettings();
-                                this.display();
-                                new Notice(
-                                    'Apply Patterns plugin settings reset.',
-                                );
-                            } catch (error) {
-                                new Notice(
-                                    'Error clearing and resetting plugin settings.',
-                                );
-                                console.log(error);
-                                updateSettings(settingsBackup);
-                            }
-                            return;
-                        }
-                        primerTimer = setTimeout(
-                            () => {
-                                button.setButtonText(
-                                    'Clear all settings for this plugin',
-                                );
-                                clearAllSettingsPrimed = false;
-                                clearButtonEl.removeClass('primed');
-                            },
-                            1000 * 4, // 4 second timeout
-                        );
-                        clearAllSettingsPrimed = true;
-                        clearButtonEl.addClass('primed');
-                        button.setButtonText('Click again to clear settings');
-                    });
-            });
+						// Check the structure of the data to import:
+						if (!Array.isArray(newSettings)) {
+							throw 'Settings are not in array format.';
+						}
+						newSettings.forEach(
+							(command: Command, commandIndex) => {
+								if (!Guards.isCommand(command)) {
+									throw `Command ${commandIndex} is not structured correctly.`;
+								}
+							},
+						);
+
+						updateSettings({
+							commands: [
+								...getSettings().commands,
+								...newSettings,
+							],
+						});
+						await this.plugin.saveSettings();
+						this.display();
+						new Notice('Imported command settings from clipboard!');
+					} catch (error) {
+						new Notice(
+							'Error importing command settings from clipboard. See developer console for more information.',
+						);
+						console.log(error);
+					}
+				});
+			});
+		new Setting(importExportEl)
+			.setName('Export commands to clipboard')
+			.addButton((button) => {
+				button
+					// .setIcon('right-arrow-with-tail')
+					.setButtonText('Export')
+					.onClick(async () => {
+						try {
+							const settings = getSettings().commands;
+							await navigator.clipboard.writeText(
+								JSON.stringify(settings, null, 2),
+							);
+							new Notice(
+								'Copied command settings as JSON to clipboard!',
+							);
+						} catch (error) {
+							new Notice(
+								'Error copying command settings as JSON to clipboard. See developer console for more information.',
+							);
+							console.log(error);
+						}
+					});
+			});
+
+		importExportEl.createEl('h3', {
+			text: 'Clear all',
+		});
+		let clearAllSettingsPrimed = false;
+		let primerTimer: ReturnType<typeof setTimeout> | null;
+		const clearButtonEl = importExportEl.createEl('span');
+		clearButtonEl.addClass('clear-settings-button');
+		new Setting(clearButtonEl)
+			.setName('Clear and reset all patterns and commands.')
+			.addButton((button) => {
+				button.setButtonText('Delete all').onClick(async () => {
+					if (primerTimer) {
+						clearTimeout(primerTimer);
+					}
+					if (clearAllSettingsPrimed === true) {
+						const settingsBackup = cloneDeep(getSettings());
+						try {
+							clearSettings();
+							await this.plugin.saveSettings();
+							this.display();
+							new Notice('Apply Patterns plugin settings reset.');
+						} catch (error) {
+							new Notice(
+								'Error clearing and resetting plugin settings.',
+							);
+							console.log(error);
+							updateSettings(settingsBackup);
+						}
+						return;
+					}
+					primerTimer = setTimeout(
+						() => {
+							button.setButtonText(
+								'Clear all settings for this plugin',
+							);
+							clearAllSettingsPrimed = false;
+							clearButtonEl.removeClass('primed');
+						},
+						1000 * 4, // 4 second timeout
+					);
+					clearAllSettingsPrimed = true;
+					clearButtonEl.addClass('primed');
+					button.setButtonText('Click again to clear settings');
+				});
+			});
     }
 }

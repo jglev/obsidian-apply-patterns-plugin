@@ -7,20 +7,60 @@
 .commands .command,
 .commands .add-command-button-el {
     border-top: 1px dotted var(--background-modifier-border);
-    padding: 18px 0 0 0;
+    /* padding: 18px 0 0 0; */
 }
 
-.patterns .pattern .pattern-name .setting-item-info {
+/* .add-pattern-button-el .setting-item-info {
     display: none;
+} */
+
+.add-pattern-button-el .setting-item-control {
+    flex: unset;
 }
 
-.patterns .pattern .pattern-name input {
+/* .patterns .pattern .pattern-name .setting-item-info {
+    display: none;
+} */
+
+/* .patterns .pattern .pattern-name input {
     width: 100%;
+} */
+
+/* .commands .command input:first-of-type {
+    margin-right: 18px;
+} */
+
+/* .rule > div:not(:first-of-type) {
+    border-left: 1px solid var(--background-modifier-success);
+    padding-left: 0.5em;
+    margin-left: 0.5em;
+} */
+
+.pattern:not(:nth-last-child(2)),
+.command:not(:nth-last-child(2)) {
+    border-bottom: 2px solid var(--interactive-accent);
 }
 
-.commands .command input:first-of-type {
-    margin-right: 18px;
+.pattern:first-child,
+.command:first-child {
+    border-top: 2px solid var(--interactive-accent);
 }
+
+.rule .setting-item:first-child .setting-item-name,
+.command .setting-item:first-child .setting-item-name {
+    border-bottom: 1px solid var(--background-modifier-success);
+    padding-bottom: 0.5em;
+}
+
+/* .pattern-rules,
+.commands {
+    padding-left: 0.5em;
+} */
+
+/* .rule > div:not(:first-child),
+.command > div:not(:first-child) {
+    padding-left: 0.5em;
+} */
 
 .patterns .rule.disabled,
 .patterns .pattern .is-disabled,
@@ -28,10 +68,11 @@
 .commands .command .is-disabled {
     opacity: 50%;
 }
-
-.patterns .rule .setting-item-info .setting-item-description {
+/* 
+.patterns .rule .setting-item-info .setting-item-description,
+.commands .command .setting-item-info .setting-item-description {
     text-align: center;
-}
+} */
 
 .patterns .rule .checkbox-container::after,
 .commands .command .checkbox-container::after {
@@ -43,22 +84,27 @@
     font-weight: 600;
 }
 
-.checkbox-container {
+/* .checkbox-container {
     width: 2.5em;
-}
+} */
 
-.pattern-rules button[aria-label="disable"],
+/* .pattern-rules button[aria-label="disable"],
 .pattern-rules div.setting-item-description {
     max-width: 4em;
-}
+} */
 
-textarea {
+/* .setting-item-control button {
+    max-width: 3em;
+} */
+
+/* textarea {
     min-width: 10em;
-}
+} */
 
-.pattern-rules button {
+/* .pattern-rules button,
+.commands button {
     padding: 1em;
-}
+} */
 
 
 .commands .command .checkbox-container:nth-of-type(1)::after {
@@ -71,10 +117,11 @@ textarea {
     content: "D";
 }
 
-.patterns .rule {
-    width: 100%;
-    overflow-y: hidden;
-    overflow-x: scroll;
+.patterns .rule,
+.commands .command {
+    /* width: 100%; */
+    /* overflow-y: hidden; */
+    /* overflow-x: scroll; */
     margin-bottom: 1em;
 }
 
@@ -97,20 +144,20 @@ textarea {
     content: "s";
 }
 
-.patterns .rule .setting-item-control input[type="text"]:first-of-type {
+/* .patterns .rule .setting-item-control input[type="text"]:first-of-type {
     margin-right: 15px;
 }
 
 .patterns .rule .setting-item-control input[type="text"]:last-of-type {
     margin-left: 15px;
-}
+} */
 
 .bold {
     font-weight: bold;
 }
 
 .pattern.collapsed [aria-label="Expand"] {
-    color: green;
+    color: var(--interactive-accent);
 }
 
 .pattern.collapsed .pattern-rules {

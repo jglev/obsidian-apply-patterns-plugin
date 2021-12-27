@@ -31,8 +31,7 @@ export const parseDateRange = (
 	const dateFormat = parsedSearchString[3] || 'YYYY-MM-DD';
 	const joinWith = parsedSearchString[4] || '|';
 	// This was previously wrapped in a try/catch block, but is no longer, in
-	// order to allow the calling function handle errors.
-	// try {
+	// order to allow the calling function to handle errors.
 	const usedStartString =
 		parsedSearchString[1] !== undefined ? parsedSearchString[1] : 'today';
 	const start = dayjs(chrono.parseDate(usedStartString));
@@ -68,9 +67,6 @@ export const parseDateRange = (
 	}
 
 	return datesBetween.join(joinWith);
-	// } catch (e) {
-	//     return;
-	// }
 };
 
 export default parseDateRange;

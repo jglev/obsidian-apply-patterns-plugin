@@ -277,695 +277,710 @@ export class SettingsTab extends PluginSettingTab {
 
         const patterns = getSettings().patterns;
         for (const [patternIndex, pattern] of patterns.entries()) {
-            const settings = getSettings();
-            const patternFilterString = settings.filterString;
-            if (
-                patternFilterString !== undefined &&
-                patternFilterString !== ''
-            ) {
-                if (
-                    !pattern.name
-                        .toLowerCase()
-                        .includes(patternFilterString.toLowerCase())
-                ) {
-                    continue;
-                }
-            }
+			const settings = getSettings();
+			const patternFilterString = settings.filterString;
+			if (
+				patternFilterString !== undefined &&
+				patternFilterString !== ''
+			) {
+				if (
+					!pattern.name
+						.toLowerCase()
+						.includes(patternFilterString.toLowerCase())
+				) {
+					continue;
+				}
+			}
 
-            const patternEl = patternsEl.createEl('div');
-            patternEl.addClass('pattern');
+			const patternEl = patternsEl.createEl('div');
+			patternEl.addClass('pattern');
 
-            const patternName = patternEl.createEl('div', {
-                cls: 'pattern-name',
-            });
+			patternEl.createEl('h3', { text: `Pattern ${patternIndex + 1}` });
 
-            new Setting(patternName)
-                // .setDesc('Pattern name')
-                .addText((text) => {
-                    text.setPlaceholder('Pattern name')
-                        .setValue(pattern.name)
-                        .onChange(async (value) => {
-                            const newPatterns = cloneDeep(
-                                getSettings().patterns,
-                            );
-                            newPatterns.splice(patternIndex, 1, {
-                                ...patterns[patternIndex],
-                                name: value,
-                            });
-                            updateSettings({
-                                patterns: newPatterns,
-                            });
+			const patternName = patternEl.createEl('div', {
+				cls: 'pattern-name',
+			});
 
-                            await this.plugin.saveSettings();
-                        });
-                })
-                .addExtraButton((button) => {
-                    const updatedSettings =
-                        getSettings().patterns[patternIndex];
-                    button
-                        .setIcon('expand-vertically')
-                        .setTooltip(
-                            updatedSettings.collapsed !== false
-                                ? 'Expand'
-                                : 'Collapse',
-                        )
-                        .onClick(async () => {
-                            const newPatterns = cloneDeep(
-                                getSettings().patterns,
-                            );
-                            newPatterns[patternIndex].collapsed =
-                                !newPatterns[patternIndex].collapsed;
-                            updateSettings({
-                                patterns: newPatterns,
-                            });
+			new Setting(patternName).setName('Pattern name').addText((text) => {
+				text.setPlaceholder('')
+					.setValue(pattern.name)
+					.onChange(async (value) => {
+						const newPatterns = cloneDeep(getSettings().patterns);
+						newPatterns.splice(patternIndex, 1, {
+							...patterns[patternIndex],
+							name: value,
+						});
+						updateSettings({
+							patterns: newPatterns,
+						});
 
-                            await this.plugin.saveSettings();
-                            this.display();
-                        });
-                })
-                .addExtraButton((button) => {
-                    button
-                        .setIcon('up-chevron-glyph')
-                        .setTooltip('Move Pattern up')
-                        .setDisabled(patternIndex === 0)
-                        .onClick(async () => {
-                            let newPatterns = cloneDeep(getSettings().patterns);
-                            newPatterns = moveInArray(
-                                newPatterns,
-                                patternIndex,
-                                patternIndex - 1,
-                            );
-                            updateSettings({
-                                patterns: newPatterns,
-                            });
+						await this.plugin.saveSettings();
+					});
+			});
 
-                            await this.plugin.saveSettings();
-                            this.display();
-                        });
-                })
-                .addExtraButton((button) => {
-                    button
-                        .setIcon('down-chevron-glyph')
-                        .setTooltip('Move Rule down')
-                        .setDisabled(patternIndex === patterns.length - 1)
-                        .onClick(async () => {
-                            let newPatterns = cloneDeep(getSettings().patterns);
-                            newPatterns = moveInArray(
-                                newPatterns,
-                                patternIndex,
-                                patternIndex + 1,
-                            );
-                            updateSettings({
-                                patterns: newPatterns,
-                            });
+			new Setting(patternEl)
+				.setName('Pattern meta controls')
+				.addExtraButton((button) => {
+					button
+						.setIcon('up-chevron-glyph')
+						.setTooltip('Move Pattern up')
+						.setDisabled(patternIndex === 0)
+						.onClick(async () => {
+							let newPatterns = cloneDeep(getSettings().patterns);
+							newPatterns = moveInArray(
+								newPatterns,
+								patternIndex,
+								patternIndex - 1,
+							);
+							updateSettings({
+								patterns: newPatterns,
+							});
 
-                            await this.plugin.saveSettings();
-                            this.display();
-                        });
-                })
-                .addExtraButton((button) => {
-                    button
-                        .setIcon('cross-in-box')
-                        .setTooltip('Delete pattern')
-                        .onClick(async () => {
-                            const newPatterns = cloneDeep(
-                                getSettings().patterns,
-                            );
-                            newPatterns.splice(patternIndex, 1);
-                            updateSettings({
-                                patterns: newPatterns,
-                            });
+							await this.plugin.saveSettings();
+							this.display();
+						});
+				})
+				.addExtraButton((button) => {
+					button
+						.setIcon('down-chevron-glyph')
+						.setTooltip('Move Pattern down')
+						.setDisabled(patternIndex === patterns.length - 1)
+						.onClick(async () => {
+							let newPatterns = cloneDeep(getSettings().patterns);
+							newPatterns = moveInArray(
+								newPatterns,
+								patternIndex,
+								patternIndex + 1,
+							);
+							updateSettings({
+								patterns: newPatterns,
+							});
 
-                            await this.plugin.saveSettings();
-                            this.display();
-                        });
-                });
+							await this.plugin.saveSettings();
+							this.display();
+						});
+				})
+				.addExtraButton((button) => {
+					button
+						.setIcon('cross-in-box')
+						.setTooltip('Delete pattern')
+						.onClick(async () => {
+							const newPatterns = cloneDeep(
+								getSettings().patterns,
+							);
+							newPatterns.splice(patternIndex, 1);
+							updateSettings({
+								patterns: newPatterns,
+							});
 
-            const patternRulesEl = patternEl.createEl('div');
-            patternRulesEl.addClass('pattern-rules');
+							await this.plugin.saveSettings();
+							this.display();
+						});
+				})
+				.addExtraButton((button) => {
+					const updatedSettings =
+						getSettings().patterns[patternIndex];
+					button
+						.setIcon('expand-vertically')
+						.setTooltip(
+							updatedSettings.collapsed !== false
+								? 'Expand'
+								: 'Collapse',
+						)
+						.onClick(async () => {
+							const newPatterns = cloneDeep(
+								getSettings().patterns,
+							);
+							newPatterns[patternIndex].collapsed =
+								!newPatterns[patternIndex].collapsed;
+							updateSettings({
+								patterns: newPatterns,
+							});
 
-            const rulesEl = patternRulesEl.createEl('div');
-            rulesEl.addClass('rules');
+							await this.plugin.saveSettings();
+							this.display();
+						});
+				});
 
-            if (getSettings().patterns[patternIndex].collapsed === true) {
-                patternEl.addClass('collapsed');
-            } else {
-                patternEl.removeClass('collapsed');
-            }
+			const patternRulesEl = patternEl.createEl('div');
+			patternRulesEl.addClass('pattern-rules');
 
-            pattern.rules.forEach((rule: PatternRule, ruleIndex) => {
-                const ruleEl = rulesEl.createEl('div');
-                ruleEl.addClass('rule');
-                if (rule.disabled === true) {
-                    ruleEl.addClass('disabled');
-                }
+			const rulesEl = patternRulesEl.createEl('div');
+			rulesEl.addClass('rules');
 
-                const setting = new Setting(ruleEl).setDesc(
-                    `Rule ${ruleIndex + 1}`,
-                );
+			if (getSettings().patterns[patternIndex].collapsed === true) {
+				patternEl.addClass('collapsed');
+			} else {
+				patternEl.removeClass('collapsed');
+			}
 
-                setting
-                    .addButton((button) => {
-                        button
-                            .setIcon(
-                                rule.disabled === true ? 'broken-link' : 'link',
-                            )
-                            .setTooltip(
-                                rule.disabled === true ? 'Enable' : 'Disable',
-                            )
-                            .onClick(async () => {
-                                const newPatterns = cloneDeep(
-                                    getSettings().patterns,
-                                );
-                                newPatterns[patternIndex].rules[
-                                    ruleIndex
-                                ].disabled =
-                                    newPatterns[patternIndex].rules[ruleIndex]
-                                        .disabled === true
-                                        ? false
-                                        : true;
-                                updateSettings({
-                                    patterns: newPatterns,
-                                });
-                                await this.plugin.saveSettings();
-                                this.display();
-                            });
-                    })
-                    .addTextArea((text) => {
-                        text.setPlaceholder('From (Regex)')
-                            .setValue(rule.from)
-                            .onChange(async (value) => {
-                                const newPatterns = cloneDeep(
-                                    getSettings().patterns,
-                                );
-                                newPatterns[patternIndex].rules.splice(
-                                    ruleIndex,
-                                    1,
-                                    {
-                                        ...newPatterns[patternIndex].rules[
-                                            ruleIndex
-                                        ],
-                                        from: value || '',
-                                    },
-                                );
-                                updateSettings({
-                                    patterns: newPatterns,
-                                });
+			pattern.rules.forEach((rule: PatternRule, ruleIndex) => {
+				const ruleEl = rulesEl.createEl('div');
+				ruleEl.addClass('rule');
+				if (rule.disabled === true) {
+					ruleEl.addClass('disabled');
+				}
 
-                                await this.plugin.saveSettings();
-                            });
-                    })
-                    .addToggle((toggle) => {
-                        toggle
-                            .setTooltip('Case-insensitive')
-                            .setValue(rule.caseInsensitive)
-                            .onChange(async (value) => {
-                                const newPatterns = cloneDeep(
-                                    getSettings().patterns,
-                                );
-                                newPatterns[patternIndex].rules[
-                                    ruleIndex
-                                ].caseInsensitive = value;
-                                updateSettings({
-                                    patterns: newPatterns,
-                                });
+				ruleEl.createEl('h4', { text: `Rule ${ruleIndex + 1}` });
 
-                                await this.plugin.saveSettings();
-                            });
-                    })
-                    .addToggle((toggle) => {
-                        toggle
-                            .setTooltip('Global')
-                            .setValue(rule.global)
-                            .onChange(async (value) => {
-                                const newPatterns = cloneDeep(
-                                    getSettings().patterns,
-                                );
-                                newPatterns[patternIndex].rules[
-                                    ruleIndex
-                                ].global = value;
-                                updateSettings({
-                                    patterns: newPatterns,
-                                });
+				new Setting(ruleEl)
+					.setName('Toggle rule')
+					.addButton((button) => {
+						button
+							.setIcon(
+								rule.disabled === true ? 'broken-link' : 'link',
+							)
+							.setTooltip(
+								rule.disabled === true ? 'Enable' : 'Disable',
+							)
+							.onClick(async () => {
+								const newPatterns = cloneDeep(
+									getSettings().patterns,
+								);
+								newPatterns[patternIndex].rules[
+									ruleIndex
+								].disabled =
+									newPatterns[patternIndex].rules[ruleIndex]
+										.disabled === true
+										? false
+										: true;
+								updateSettings({
+									patterns: newPatterns,
+								});
+								await this.plugin.saveSettings();
+								this.display();
+							});
+					});
 
-                                await this.plugin.saveSettings();
-                            });
-                    })
-                    .addToggle((toggle) => {
-                        toggle
-                            .setTooltip('Multiline')
-                            .setValue(rule.multiline)
-                            .onChange(async (value) => {
-                                const newPatterns = cloneDeep(
-                                    getSettings().patterns,
-                                );
-                                newPatterns[patternIndex].rules[
-                                    ruleIndex
-                                ].multiline = value;
-                                updateSettings({
-                                    patterns: newPatterns,
-                                });
+				new Setting(ruleEl)
+					.setName('Matching text (Regex)')
+					.addTextArea((text) => {
+						text.setPlaceholder('')
+							.setValue(rule.from)
+							.onChange(async (value) => {
+								const newPatterns = cloneDeep(
+									getSettings().patterns,
+								);
+								newPatterns[patternIndex].rules.splice(
+									ruleIndex,
+									1,
+									{
+										...newPatterns[patternIndex].rules[
+											ruleIndex
+										],
+										from: value || '',
+									},
+								);
+								updateSettings({
+									patterns: newPatterns,
+								});
 
-                                await this.plugin.saveSettings();
-                            });
-                    })
-                    .addToggle((toggle) => {
-                        toggle
-                            .setTooltip('Sticky')
-                            .setValue(rule.sticky)
-                            .onChange(async (value) => {
-                                const newPatterns = cloneDeep(
-                                    getSettings().patterns,
-                                );
-                                newPatterns[patternIndex].rules[
-                                    ruleIndex
-                                ].sticky = value;
-                                updateSettings({
-                                    patterns: newPatterns,
-                                });
+								await this.plugin.saveSettings();
+							});
+					});
 
-                                await this.plugin.saveSettings();
-                            });
-                    })
-                    .addTextArea((text) => {
-                        text.setPlaceholder('To')
-                            .setValue(rule.to)
-                            .onChange(async (value) => {
-                                const newPatterns = cloneDeep(
-                                    getSettings().patterns,
-                                );
-                                newPatterns[patternIndex].rules.splice(
-                                    ruleIndex,
-                                    1,
-                                    {
-                                        ...newPatterns[patternIndex].rules[
-                                            ruleIndex
-                                        ],
-                                        to: value || '',
-                                    },
-                                );
-                                updateSettings({
-                                    patterns: newPatterns,
-                                });
+				new Setting(ruleEl)
+					.setName('Regex Modes')
+					.addToggle((toggle) => {
+						toggle
+							.setTooltip('Case-insensitive')
+							.setValue(rule.caseInsensitive)
+							.onChange(async (value) => {
+								const newPatterns = cloneDeep(
+									getSettings().patterns,
+								);
+								newPatterns[patternIndex].rules[
+									ruleIndex
+								].caseInsensitive = value;
+								updateSettings({
+									patterns: newPatterns,
+								});
 
-                                await this.plugin.saveSettings();
-                            });
-                    })
-                    .addExtraButton((button) => {
-                        button
-                            .setIcon('info')
-                            .setTooltip('View compiled From ⇨ To')
-                            .onClick(async () => {
-                                const updatedRule =
-                                    getSettings().patterns[patternIndex].rules[
-                                        ruleIndex
-                                    ];
+								await this.plugin.saveSettings();
+							});
+					})
+					.addToggle((toggle) => {
+						toggle
+							.setTooltip('Global')
+							.setValue(rule.global)
+							.onChange(async (value) => {
+								const newPatterns = cloneDeep(
+									getSettings().patterns,
+								);
+								newPatterns[patternIndex].rules[
+									ruleIndex
+								].global = value;
+								updateSettings({
+									patterns: newPatterns,
+								});
 
-                                const fromValidated = validateRuleString(
-                                    updatedRule.from,
-                                );
-                                const toValidated = validateRuleString(
-                                    updatedRule.to,
-                                    false,
-                                );
-                                console.log(587, updatedRule.to, toValidated);
-                                const noticeTimeoutSeconds = 1000 * 30; // 30 seconds
-                                if (!fromValidated.valid) {
-                                    new Notice(
-                                        `"From" pattern is invalid: ${fromValidated.string}`,
-                                        noticeTimeoutSeconds,
-                                    );
-                                    return;
-                                }
+								await this.plugin.saveSettings();
+							});
+					})
+					.addToggle((toggle) => {
+						toggle
+							.setTooltip('Multiline')
+							.setValue(rule.multiline)
+							.onChange(async (value) => {
+								const newPatterns = cloneDeep(
+									getSettings().patterns,
+								);
+								newPatterns[patternIndex].rules[
+									ruleIndex
+								].multiline = value;
+								updateSettings({
+									patterns: newPatterns,
+								});
 
-                                if (toValidated.valid === false) {
-                                    new Notice(
-                                        `"To" pattern is invalid: ${toValidated.string}`,
-                                        noticeTimeoutSeconds,
-                                    );
-                                    return;
-                                }
+								await this.plugin.saveSettings();
+							});
+					})
+					.addToggle((toggle) => {
+						toggle
+							.setTooltip('Sticky')
+							.setValue(rule.sticky)
+							.onChange(async (value) => {
+								const newPatterns = cloneDeep(
+									getSettings().patterns,
+								);
+								newPatterns[patternIndex].rules[
+									ruleIndex
+								].sticky = value;
+								updateSettings({
+									patterns: newPatterns,
+								});
 
-                                new Notice(
-                                    new RegExp(
-                                        fromValidated.string,
-                                        ('u' + updatedRule.caseInsensitive
-                                            ? 'i'
-                                            : '') +
-                                            (updatedRule.global ? 'g' : '') +
-                                            (updatedRule.multiline ? 'm' : '') +
-                                            (updatedRule.sticky ? 's' : ''),
-                                    ).toString() +
-                                        '\n⇩\n' +
-                                        (toValidated.string !== ''
-                                            ? '"' + toValidated.string + '"'
-                                            : '[Remove]'),
-                                    noticeTimeoutSeconds,
-                                );
-                            });
-                    })
-                    .addExtraButton((button) => {
-                        button
-                            .setIcon('up-chevron-glyph')
-                            .setTooltip('Move Rule up')
-                            .setDisabled(ruleIndex === 0)
-                            .onClick(async () => {
-                                const newPatterns = cloneDeep(
-                                    getSettings().patterns,
-                                );
-                                newPatterns[patternIndex].rules = moveInArray(
-                                    newPatterns[patternIndex].rules,
-                                    ruleIndex,
-                                    ruleIndex - 1,
-                                );
-                                updateSettings({
-                                    patterns: newPatterns,
-                                });
+								await this.plugin.saveSettings();
+							});
+					});
 
-                                await this.plugin.saveSettings();
-                                this.display();
-                            });
-                    })
-                    .addExtraButton((button) => {
-                        button
-                            .setIcon('down-chevron-glyph')
-                            .setTooltip('Move Rule down')
-                            .setDisabled(ruleIndex === pattern.rules.length - 1)
-                            .onClick(async () => {
-                                const newPatterns = cloneDeep(
-                                    getSettings().patterns,
-                                );
-                                newPatterns[patternIndex].rules = moveInArray(
-                                    newPatterns[patternIndex].rules,
-                                    ruleIndex,
-                                    ruleIndex + 1,
-                                );
-                                updateSettings({
-                                    patterns: newPatterns,
-                                });
+				new Setting(ruleEl)
+					.setName('Replacement text')
+					.addTextArea((text) => {
+						text.setPlaceholder('')
+							.setValue(rule.to)
+							.onChange(async (value) => {
+								const newPatterns = cloneDeep(
+									getSettings().patterns,
+								);
+								newPatterns[patternIndex].rules.splice(
+									ruleIndex,
+									1,
+									{
+										...newPatterns[patternIndex].rules[
+											ruleIndex
+										],
+										to: value || '',
+									},
+								);
+								updateSettings({
+									patterns: newPatterns,
+								});
 
-                                await this.plugin.saveSettings();
-                                this.display();
-                            });
-                    })
-                    .addExtraButton((button) => {
-                        button
-                            .setIcon('cross-in-box')
-                            .setTooltip('Delete rule')
-                            .onClick(async () => {
-                                const newPatterns = cloneDeep(
-                                    getSettings().patterns,
-                                );
-                                newPatterns[patternIndex].rules.splice(
-                                    ruleIndex,
-                                    1,
-                                );
-                                updateSettings({
-                                    patterns: newPatterns,
-                                });
+								await this.plugin.saveSettings();
+							});
+					});
 
-                                await this.plugin.saveSettings();
-                                this.display();
-                            });
-                    });
-            });
+				new Setting(ruleEl)
+					.setName('Rule meta controls')
+					.addExtraButton((button) => {
+						button
+							.setIcon('info')
+							.setTooltip('View compiled From ⇨ To')
+							.onClick(async () => {
+								const updatedRule =
+									getSettings().patterns[patternIndex].rules[
+										ruleIndex
+									];
 
-            const addRuleButtonEl = patternRulesEl.createDiv('add-rule-button');
+								const fromValidated = validateRuleString(
+									updatedRule.from,
+								);
+								const toValidated = validateRuleString(
+									updatedRule.to,
+									false,
+								);
 
-            new Setting(addRuleButtonEl).addButton((button) => {
-                button
-                    .setButtonText('Add find/replace rule')
-                    .setClass('add-rule-button')
-                    .onClick(async () => {
-                        const newPatterns = cloneDeep(getSettings().patterns);
-                        newPatterns[patternIndex].rules.push({
-                            ...defaultPatternRuleSettings,
-                        });
-                        updateSettings({
-                            patterns: newPatterns,
-                        });
-                        await this.plugin.saveSettings();
-                        this.display();
-                    });
-            });
-        }
+								const noticeTimeoutSeconds = 1000 * 30; // 30 seconds
+								if (!fromValidated.valid) {
+									new Notice(
+										`"From" pattern is invalid: ${fromValidated.string}`,
+										noticeTimeoutSeconds,
+									);
+									return;
+								}
 
-        const addPatternButtonEl = patternsEl.createEl('div', {
-            cls: 'add-pattern-button-el',
-        });
+								if (toValidated.valid === false) {
+									new Notice(
+										`"To" pattern is invalid: ${toValidated.string}`,
+										noticeTimeoutSeconds,
+									);
+									return;
+								}
 
-        new Setting(addPatternButtonEl).addButton((button) => {
-            button
-                .setButtonText('Add pattern')
-                .setClass('add-pattern-button')
-                .onClick(async () => {
-                    updateSettings({
-                        patterns: [
-                            ...getSettings().patterns,
-                            { ...defaultPatternSettings },
-                        ],
-                    });
-                    await this.plugin.saveSettings();
-                    this.display();
-                });
-        });
+								new Notice(
+									new RegExp(
+										fromValidated.string,
+										('u' + updatedRule.caseInsensitive
+											? 'i'
+											: '') +
+											(updatedRule.global ? 'g' : '') +
+											(updatedRule.multiline ? 'm' : '') +
+											(updatedRule.sticky ? 's' : ''),
+									).toString() +
+										'\n⇩\n' +
+										(toValidated.string !== ''
+											? '"' + toValidated.string + '"'
+											: '[Remove]'),
+									noticeTimeoutSeconds,
+								);
+							});
+					})
+					.addExtraButton((button) => {
+						button
+							.setIcon('up-chevron-glyph')
+							.setTooltip('Move Rule up')
+							.setDisabled(ruleIndex === 0)
+							.onClick(async () => {
+								const newPatterns = cloneDeep(
+									getSettings().patterns,
+								);
+								newPatterns[patternIndex].rules = moveInArray(
+									newPatterns[patternIndex].rules,
+									ruleIndex,
+									ruleIndex - 1,
+								);
+								updateSettings({
+									patterns: newPatterns,
+								});
 
-        const commandsEl = containerEl.createEl('div');
-        commandsEl.addClass('commands');
-        commandsEl.createEl('h2', { text: 'Commands' });
-        const commandsDescriptionEl = commandsEl.createEl('div');
-        commandsDescriptionEl.addClass('setting-item-description');
-        commandsDescriptionEl.append(
-            'Commands for the command palette. ',
-            fragment.createEl('span', {
-                text: 'Changes to this section are not reflected outside of this settings window until Obsidian is reloaded.',
-                cls: 'bold',
-            }),
-            fragment.createEl('br'),
-            ' Each command is populated by filtering the Pattern names above. Untitled patterns are given placeholder names of the form ',
-            fragment.createEl('code', { text: formatUnnamedPattern(1) }),
-            '."',
-            fragment.createEl('br'),
-            'If a command matches only one Pattern, it will automatically run that Pattern when the command is called. If the command matches more than one Pattern, a submenu will open, asking which Pattern you would like to run.',
-        );
+								await this.plugin.saveSettings();
+								this.display();
+							});
+					})
+					.addExtraButton((button) => {
+						button
+							.setIcon('down-chevron-glyph')
+							.setTooltip('Move Rule down')
+							.setDisabled(ruleIndex === pattern.rules.length - 1)
+							.onClick(async () => {
+								const newPatterns = cloneDeep(
+									getSettings().patterns,
+								);
+								newPatterns[patternIndex].rules = moveInArray(
+									newPatterns[patternIndex].rules,
+									ruleIndex,
+									ruleIndex + 1,
+								);
+								updateSettings({
+									patterns: newPatterns,
+								});
 
-        new Setting(commandsEl)
-            .addText((text) => {
-                const settings = getSettings();
-                text.setValue(settings.commandFilterString || '').onChange(
-                    async (value) => {
-                        updateSettings({
-                            ...cloneDeep(getSettings()),
-                            commandFilterString: value,
-                        });
+								await this.plugin.saveSettings();
+								this.display();
+							});
+					})
+					.addExtraButton((button) => {
+						button
+							.setIcon('cross-in-box')
+							.setTooltip('Delete rule')
+							.onClick(async () => {
+								const newPatterns = cloneDeep(
+									getSettings().patterns,
+								);
+								newPatterns[patternIndex].rules.splice(
+									ruleIndex,
+									1,
+								);
+								updateSettings({
+									patterns: newPatterns,
+								});
 
-                        await this.plugin.saveSettings();
-                    },
-                );
-            })
-            .addButton((button) => {
-                button
-                    .setIcon('magnifying-glass')
-                    .setTooltip('Filter Commands')
-                    .onClick(async () => {
-                        this.display();
-                    });
-            })
-            .setDesc('Filter commands by name');
+								await this.plugin.saveSettings();
+								this.display();
+							});
+					});
+			});
 
-        const commands = getSettings().commands;
-        for (const [commandIndex, command] of commands.entries()) {
-            const settings = getSettings();
-            const commandFilterString = settings.commandFilterString;
-            if (
-                commandFilterString !== undefined &&
-                commandFilterString !== ''
-            ) {
-                if (
-                    !command.name
-                        .toLowerCase()
-                        .includes(commandFilterString.toLowerCase())
-                ) {
-                    continue;
-                }
-            }
+			const addRuleButtonEl = patternRulesEl.createDiv('add-rule-button');
 
-            const commandEl = commandsEl.createEl('div');
-            commandEl.addClass('command');
+			new Setting(addRuleButtonEl).addButton((button) => {
+				button
+					.setButtonText('Add find/replace rule')
+					.setClass('add-rule-button')
+					.onClick(async () => {
+						const newPatterns = cloneDeep(getSettings().patterns);
+						newPatterns[patternIndex].rules.push({
+							...defaultPatternRuleSettings,
+						});
+						updateSettings({
+							patterns: newPatterns,
+						});
+						await this.plugin.saveSettings();
+						this.display();
+					});
+			});
+		}
 
-            new Setting(commandEl)
-                .setDesc(`Command ${commandIndex + 1}`)
-                .addText((text) => {
-                    text.setPlaceholder('Command Palette name')
-                        .setValue(command.name)
-                        .onChange(async (value) => {
-                            const newCommands = cloneDeep(
-                                getSettings().commands,
-                            );
-                            newCommands.splice(commandIndex, 1, {
-                                ...newCommands[commandIndex],
-                                name: value,
-                            });
-                            updateSettings({
-                                commands: newCommands,
-                            });
+		const addPatternButtonEl = patternsEl.createEl('div', {
+			cls: 'add-pattern-button-el',
+		});
 
-                            await this.plugin.saveSettings();
-                        });
-                })
-                .addText((text) => {
-                    text.setPlaceholder('Pattern name filter')
-                        .setValue(command.patternFilter)
-                        .onChange(async (value) => {
-                            const newCommands = cloneDeep(
-                                getSettings().commands,
-                            );
-                            newCommands.splice(commandIndex, 1, {
-                                ...newCommands[commandIndex],
-                                patternFilter: value,
-                            });
-                            updateSettings({
-                                commands: newCommands,
-                            });
+		new Setting(addPatternButtonEl).addButton((button) => {
+			button
+				.setButtonText('Add pattern')
+				.setClass('add-pattern-button')
+				.onClick(async () => {
+					updateSettings({
+						patterns: [
+							...getSettings().patterns,
+							{ ...defaultPatternSettings },
+						],
+					});
+					await this.plugin.saveSettings();
+					this.display();
+				});
+		});
 
-                            await this.plugin.saveSettings();
-                        });
-                })
-                .addToggle((toggle) => {
-                    toggle
-                        .setTooltip('Apply to Selection')
-                        .setValue(command.selection || false)
-                        .onChange(async (value) => {
-                            const newCommands = cloneDeep(
-                                getSettings().commands,
-                            );
-                            newCommands[commandIndex].selection = value;
-                            updateSettings({
-                                commands: newCommands,
-                            });
+		const commandsEl = containerEl.createEl('div');
+		commandsEl.addClass('commands');
+		commandsEl.createEl('h2', { text: 'Commands' });
+		const commandsDescriptionEl = commandsEl.createEl('div');
+		commandsDescriptionEl.addClass('setting-item-description');
+		commandsDescriptionEl.append(
+			'Commands for the command palette. ',
+			fragment.createEl('span', {
+				text: 'Changes to this section are not reflected outside of this settings window until Obsidian is reloaded.',
+				cls: 'bold',
+			}),
+			fragment.createEl('br'),
+			' Each command is populated by filtering the Pattern names above. Untitled patterns are given placeholder names of the form ',
+			fragment.createEl('code', { text: formatUnnamedPattern(1) }),
+			'."',
+			fragment.createEl('br'),
+			'If a command matches only one Pattern, it will automatically run that Pattern when the command is called. If the command matches more than one Pattern, a submenu will open, asking which Pattern you would like to run.',
+		);
 
-                            await this.plugin.saveSettings();
-                        });
-                })
-                .addToggle((toggle) => {
-                    toggle
-                        .setTooltip('Apply to whole lines')
-                        .setValue(command.lines || false)
-                        .onChange(async (value) => {
-                            const newCommands = cloneDeep(
-                                getSettings().commands,
-                            );
-                            newCommands[commandIndex].lines = value;
-                            updateSettings({
-                                commands: newCommands,
-                            });
+		new Setting(commandsEl)
+			.addText((text) => {
+				const settings = getSettings();
+				text.setValue(settings.commandFilterString || '').onChange(
+					async (value) => {
+						updateSettings({
+							...cloneDeep(getSettings()),
+							commandFilterString: value,
+						});
 
-                            await this.plugin.saveSettings();
-                        });
-                })
-                .addToggle((toggle) => {
-                    toggle
-                        .setTooltip('Apply to whole document')
-                        .setValue(command.document || false)
-                        .onChange(async (value) => {
-                            const newCommands = cloneDeep(
-                                getSettings().commands,
-                            );
-                            newCommands[commandIndex].document = value;
-                            updateSettings({
-                                commands: newCommands,
-                            });
+						await this.plugin.saveSettings();
+					},
+				);
+			})
+			.addButton((button) => {
+				button
+					.setIcon('magnifying-glass')
+					.setTooltip('Filter Commands')
+					.onClick(async () => {
+						this.display();
+					});
+			})
+			.setName('Filter commands by name');
 
-                            await this.plugin.saveSettings();
-                        });
-                })
-                .addExtraButton((button) => {
-                    button
-                        .setIcon('info')
-                        .setTooltip('View matching patterns')
-                        .onClick(async () => {
-                            const settings = getSettings();
-                            const command = settings.commands[commandIndex];
+		const commands = getSettings().commands;
+		for (const [commandIndex, command] of commands.entries()) {
+			const settings = getSettings();
+			const commandFilterString = settings.commandFilterString;
+			if (
+				commandFilterString !== undefined &&
+				commandFilterString !== ''
+			) {
+				if (
+					!command.name
+						.toLowerCase()
+						.includes(commandFilterString.toLowerCase())
+				) {
+					continue;
+				}
+			}
 
-                            const noticeTimeoutSeconds = 1000 * 30; // 30 seconds
-                            const matchingPatterns = filterPatterns(
-                                command,
-                            ).map((patternIndex: number) =>
-                                formatPatternName(patternIndex),
-                            );
-                            const numMatchingPatterns = matchingPatterns.length;
-                            new Notice(
-                                `${numMatchingPatterns} matching pattern${
-                                    numMatchingPatterns !== 1 ? 's' : ''
-                                }${
-                                    numMatchingPatterns > 0
-                                        ? '\n - "' +
-                                          matchingPatterns.join('"\n - "') +
-                                          '"'
-                                        : ''
-                                }`,
-                                noticeTimeoutSeconds,
-                            );
-                        });
-                })
-                .addExtraButton((button) => {
-                    button
-                        .setIcon('up-chevron-glyph')
-                        .setTooltip('Move Command up')
-                        .setDisabled(commandIndex === 0)
-                        .onClick(async () => {
-                            let newCommands = cloneDeep(getSettings().commands);
-                            newCommands = moveInArray(
-                                newCommands,
-                                commandIndex,
-                                commandIndex - 1,
-                            );
-                            updateSettings({
-                                commands: newCommands,
-                            });
+			const commandEl = commandsEl.createEl('div');
+			commandEl.addClass('command');
 
-                            await this.plugin.saveSettings();
-                            this.display();
-                        });
-                })
-                .addExtraButton((button) => {
-                    button
-                        .setIcon('down-chevron-glyph')
-                        .setTooltip('Move Rule down')
-                        .setDisabled(commandIndex === commands.length - 1)
-                        .onClick(async () => {
-                            let newCommands = cloneDeep(getSettings().commands);
-                            newCommands = moveInArray(
-                                newCommands,
-                                commandIndex,
-                                commandIndex + 1,
-                            );
-                            updateSettings({
-                                commands: newCommands,
-                            });
+			new Setting(commandEl)
+				.setName(`Command ${commandIndex + 1}`)
+				.addText((text) => {
+					text.setPlaceholder('Command Palette name')
+						.setValue(command.name)
+						.onChange(async (value) => {
+							const newCommands = cloneDeep(
+								getSettings().commands,
+							);
+							newCommands.splice(commandIndex, 1, {
+								...newCommands[commandIndex],
+								name: value,
+							});
+							updateSettings({
+								commands: newCommands,
+							});
 
-                            await this.plugin.saveSettings();
-                            this.display();
-                        });
-                })
-                .addExtraButton((button) => {
-                    button
-                        .setIcon('cross')
-                        .setTooltip('Delete command')
-                        .onClick(async () => {
-                            const newCommands = cloneDeep(
-                                getSettings().commands,
-                            );
-                            newCommands.splice(commandIndex, 1);
-                            updateSettings({
-                                commands: newCommands,
-                            });
+							await this.plugin.saveSettings();
+						});
+				});
 
-                            await this.plugin.saveSettings();
-                            this.display();
-                        });
-                });
-        }
+			new Setting(commandEl).addText((text) => {
+				text.setPlaceholder('Pattern name filter')
+					.setValue(command.patternFilter)
+					.onChange(async (value) => {
+						const newCommands = cloneDeep(getSettings().commands);
+						newCommands.splice(commandIndex, 1, {
+							...newCommands[commandIndex],
+							patternFilter: value,
+						});
+						updateSettings({
+							commands: newCommands,
+						});
+
+						await this.plugin.saveSettings();
+					});
+			});
+
+			new Setting(commandEl)
+				.addToggle((toggle) => {
+					toggle
+						.setTooltip('Apply to Selection')
+						.setValue(command.selection || false)
+						.onChange(async (value) => {
+							const newCommands = cloneDeep(
+								getSettings().commands,
+							);
+							newCommands[commandIndex].selection = value;
+							updateSettings({
+								commands: newCommands,
+							});
+
+							await this.plugin.saveSettings();
+						});
+				})
+				.addToggle((toggle) => {
+					toggle
+						.setTooltip('Apply to whole lines')
+						.setValue(command.lines || false)
+						.onChange(async (value) => {
+							const newCommands = cloneDeep(
+								getSettings().commands,
+							);
+							newCommands[commandIndex].lines = value;
+							updateSettings({
+								commands: newCommands,
+							});
+
+							await this.plugin.saveSettings();
+						});
+				})
+				.addToggle((toggle) => {
+					toggle
+						.setTooltip('Apply to whole document')
+						.setValue(command.document || false)
+						.onChange(async (value) => {
+							const newCommands = cloneDeep(
+								getSettings().commands,
+							);
+							newCommands[commandIndex].document = value;
+							updateSettings({
+								commands: newCommands,
+							});
+
+							await this.plugin.saveSettings();
+						});
+				});
+
+			new Setting(commandEl)
+				.addExtraButton((button) => {
+					button
+						.setIcon('info')
+						.setTooltip('View matching patterns')
+						.onClick(async () => {
+							const settings = getSettings();
+							const command = settings.commands[commandIndex];
+
+							const noticeTimeoutSeconds = 1000 * 30; // 30 seconds
+							const matchingPatterns = filterPatterns(
+								command,
+							).map((patternIndex: number) =>
+								formatPatternName(patternIndex),
+							);
+							const numMatchingPatterns = matchingPatterns.length;
+							new Notice(
+								`${numMatchingPatterns} matching pattern${
+									numMatchingPatterns !== 1 ? 's' : ''
+								}${
+									numMatchingPatterns > 0
+										? '\n - "' +
+										  matchingPatterns.join('"\n - "') +
+										  '"'
+										: ''
+								}`,
+								noticeTimeoutSeconds,
+							);
+						});
+				})
+				.addExtraButton((button) => {
+					button
+						.setIcon('up-chevron-glyph')
+						.setTooltip('Move Command up')
+						.setDisabled(commandIndex === 0)
+						.onClick(async () => {
+							let newCommands = cloneDeep(getSettings().commands);
+							newCommands = moveInArray(
+								newCommands,
+								commandIndex,
+								commandIndex - 1,
+							);
+							updateSettings({
+								commands: newCommands,
+							});
+
+							await this.plugin.saveSettings();
+							this.display();
+						});
+				})
+				.addExtraButton((button) => {
+					button
+						.setIcon('down-chevron-glyph')
+						.setTooltip('Move Command down')
+						.setDisabled(commandIndex === commands.length - 1)
+						.onClick(async () => {
+							let newCommands = cloneDeep(getSettings().commands);
+							newCommands = moveInArray(
+								newCommands,
+								commandIndex,
+								commandIndex + 1,
+							);
+							updateSettings({
+								commands: newCommands,
+							});
+
+							await this.plugin.saveSettings();
+							this.display();
+						});
+				})
+				.addExtraButton((button) => {
+					button
+						.setIcon('cross')
+						.setTooltip('Delete command')
+						.onClick(async () => {
+							const newCommands = cloneDeep(
+								getSettings().commands,
+							);
+							newCommands.splice(commandIndex, 1);
+							updateSettings({
+								commands: newCommands,
+							});
+
+							await this.plugin.saveSettings();
+							this.display();
+						});
+				});
+		}
 
         const addCommandButtonEl = commandsEl.createEl('div', {
             cls: 'add-command-button-el',

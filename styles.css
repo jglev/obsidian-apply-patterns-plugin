@@ -28,7 +28,8 @@
     color: var(--interactive-success);
 }
 
-.pattern.collapsed .pattern-rules {
+.pattern.collapsed .pattern-rules,
+.pattern.collapsed .pattern-cursor {
     display: none;
 }
 

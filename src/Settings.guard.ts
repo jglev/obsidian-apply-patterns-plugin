@@ -29,12 +29,13 @@ export function isPattern(obj: any, _argumentName?: string): obj is Pattern {
             typeof obj === "object" ||
             typeof obj === "function") &&
         typeof obj.name === "string" &&
-        typeof obj.done === "boolean" &&
         Array.isArray(obj.rules) &&
         obj.rules.every((e: any) =>
             isPatternRule(e) as boolean
         ) &&
-        typeof obj.collapsed === "boolean"
+        typeof obj.collapsed === "boolean" &&
+        typeof obj.cursorRegexStart === "string" &&
+        typeof obj.cursorRegexEnd === "string"
     )
 }
 

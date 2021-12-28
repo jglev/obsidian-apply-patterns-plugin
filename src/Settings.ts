@@ -18,46 +18,48 @@ export interface Settings {
 
 /** @see {isPattern} ts-auto-guard:type-guard */
 export interface Pattern {
-    name: string;
-    done: boolean;
-    rules: PatternRule[];
-    collapsed: boolean;
+	name: string;
+	rules: PatternRule[];
+	collapsed: boolean;
+	cursorRegexStart: string;
+	cursorRegexEnd: string;
 }
 
 export const defaultPatternSettings: Pattern = {
-    name: '',
-    done: false,
-    rules: [],
-    collapsed: false,
+	name: '',
+	rules: [],
+	collapsed: false,
+	cursorRegexStart: '^',
+	cursorRegexEnd: '$',
 };
 
 /** @see {isPatternRule} ts-auto-guard:type-guard */
 export interface PatternRule {
-    from: string;
-    to: string;
-    caseInsensitive: boolean;
-    global: boolean;
-    multiline: boolean;
-    sticky: boolean;
-    disabled?: boolean;
+	from: string;
+	to: string;
+	caseInsensitive: boolean;
+	global: boolean;
+	multiline: boolean;
+	sticky: boolean;
+	disabled?: boolean;
 }
 
 export const defaultPatternRuleSettings: PatternRule = {
-    from: '',
-    to: '',
-    caseInsensitive: false,
-    global: false,
-    multiline: false,
-    sticky: false,
-    disabled: false,
+	from: '',
+	to: '',
+	caseInsensitive: false,
+	global: false,
+	multiline: false,
+	sticky: false,
+	disabled: false,
 };
 
 export const defaultSettings: Settings = {
-    patterns: [],
-    filterString: '',
-    commandFilterString: '',
-    commands: [],
-    apiVersion: 3,
+	patterns: [],
+	filterString: '',
+	commandFilterString: '',
+	commands: [],
+	apiVersion: 4,
 };
 
 /** @see {isCommand} ts-auto-guard:type-guard */

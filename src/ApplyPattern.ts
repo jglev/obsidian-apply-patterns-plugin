@@ -11,6 +11,62 @@ import { validateRuleString } from './ValidateRuleString';
 import { PatternModal } from './PatternsModal';
 import { Command, getSettings } from './Settings';
 
+const calculateCursorPoints = (
+	minLine: number,
+	lines: Array<string>,
+	cursorStartRegex: { valid: boolean | null; string: string },
+	cursorEndRegex: { valid: boolean | null; string: string },
+): {from: {line: number, ch: number}, to: {line: number, ch: number}} => {
+	let cursorStart = { line: minLine, ch: 0 };
+	let cursorEnd = { line: minLine, ch: 0 };
+
+	let cursorStartMatch = lines
+		.join('\n')
+		.match(new RegExp(cursorStartRegex.string));
+	
+	let cursorEndMatch = lines
+		.join('\n')
+		.match(new RegExp(cursorEndRegex.string));
+
+	if (cursorStartMatch === null && cursorEndMatch !== null) {
+		cursorStartMatch = cursorEndMatch;
+	} else if (cursorEndMatch === null && cursorStartMatch !== null) {
+		cursorEndMatch = cursorStartMatch;
+	}
+
+	if (cursorStartMatch !== null) {
+		const beforeCursorMatch = lines
+			.join('\n')
+			.slice(0, cursorStartMatch.index)
+			.split('\n');
+		cursorStart = {
+			line: minLine + beforeCursorMatch.length - 1,
+			ch: beforeCursorMatch[beforeCursorMatch.length - 1].length,
+		};
+	}
+
+	if (cursorEndMatch !== null) {
+		const beforeCursorMatch = lines
+			.join('\n')
+			.slice(0, cursorEndMatch.index)
+			.split('\n');
+		cursorEnd = {
+			line: minLine + beforeCursorMatch.length - 1,
+			ch: beforeCursorMatch[beforeCursorMatch.length - 1].length,
+		};
+		console.log(57, {
+			beforeCursorMatch: beforeCursorMatch,
+			cursorEndMatch: cursorEndMatch,
+		});
+	}
+
+	const output = { from: cursorStart, to: cursorEnd };
+
+	console.log(61, output);
+
+	return output;
+};
+
 export const applyPattern = (
 	checking: boolean,
 	editor: Editor,
@@ -47,6 +103,8 @@ export const applyPattern = (
 		let allValid = true;
 		const allRuleStringsValidated: { from: string; to: string }[] = [];
 
+		const noticeTimeoutSeconds = 1000 * 30; // 30 seconds
+
 		for (let ruleIndex = 0; ruleIndex < pattern.rules.length; ruleIndex++) {
 			const rule = pattern.rules[ruleIndex];
 			if (rule.disabled === true) {
@@ -63,7 +121,7 @@ export const applyPattern = (
 				from: fromValidated.string,
 				to: toValidated.string,
 			});
-			const noticeTimeoutSeconds = 1000 * 30; // 30 seconds
+
 			if (!fromValidated.valid) {
 				new Notice(
 					`Error: "${rule.from}" is not valid: "${fromValidated.string}". Stopping before editing the text.`,
@@ -79,6 +137,26 @@ export const applyPattern = (
 				allValid = false;
 			}
 		}
+
+		const cursorStartRegex = validateRuleString(pattern.cursorRegexStart);
+		const cursorEndRegex = validateRuleString(pattern.cursorRegexEnd);
+
+		if (cursorStartRegex.valid !== true) {
+			new Notice(
+				`Error: "${pattern.cursorRegexStart}" is not valid: "${cursorStartRegex.string}". Stopping before editing the text.`,
+				noticeTimeoutSeconds,
+			);
+			allValid = false;
+		}
+
+		if (cursorEndRegex.valid !== true) {
+			new Notice(
+				`Error: "${pattern.cursorRegexEnd}" is not valid: "${cursorEndRegex.string}". Stopping before editing the text.`,
+				noticeTimeoutSeconds,
+			);
+			allValid = false;
+		}
+
 		if (allValid !== true) {
 			return; // Stop the function prematurely
 		}
@@ -122,26 +200,11 @@ export const applyPattern = (
 				},
 				text: updatedLines.join('\n'),
 			});
+			
+			const finalCursorPositions = calculateCursorPoints(minLine, updatedLines, cursorStartRegex, cursorEndRegex);
 
-			const newContentSplit = updatedLines.join('\n').split('\n');
-			const newContentEnd = {
-				line: minLine + newContentSplit.length - 1,
-				ch: newContentSplit[newContentSplit.length - 1].length,
-			};
 			transaction.selection = {
-				from:
-					cursorTo.ch === cursorFrom.ch &&
-					cursorTo.line === cursorFrom.line
-						? newContentEnd
-						: {
-								line: cursorFrom.line,
-								ch:
-									newContentEnd.ch -
-									(editor.getLine(cursorFrom.line).length -
-										cursorFrom.ch) -
-									1,
-						  },
-				to: newContentEnd,
+				from: finalCursorPositions.from, to: finalCursorPositions.to
 			};
 		}
 
@@ -161,23 +224,17 @@ export const applyPattern = (
 			transaction.replaceSelection = updatedSelection;
 
 			const newContentSplit = updatedSelection.split('\n');
-			const newContentEnd = {
-				line: minLine + newContentSplit.length - 1,
-				ch: Math.max(
-					// newContentSplit[newContentSplit.length - 1]),
-					editor.getLine(maxLine).length -
-						cursorTo.ch +
-						(newContentSplit[newContentSplit.length - 1].length -
-							editor.getLine(maxLine).length),
-				),
-			};
+
+			const finalCursorPositions = calculateCursorPoints(
+				minLine,
+				newContentSplit,
+				cursorStartRegex,
+				cursorEndRegex,
+			);
+
 			transaction.selection = {
-				from:
-					cursorFrom.ch === cursorTo.ch &&
-					cursorFrom.line === cursorTo.line
-						? newContentEnd
-						: cursorFrom,
-				to: newContentEnd,
+				from: finalCursorPositions.from,
+				to: finalCursorPositions.to,
 			};
 		}
 		if (mode === 'document') {
@@ -209,13 +266,17 @@ export const applyPattern = (
 				text: updatedDocument,
 			});
 			const newContentSplit = updatedDocument.split('\n');
-			const newContentEnd = {
-				line: newContentSplit.length - 1,
-				ch: newContentSplit[newContentSplit.length - 1].length,
-			};
+			
+			const finalCursorPositions = calculateCursorPoints(
+				0,
+				newContentSplit,
+				cursorStartRegex,
+				cursorEndRegex,
+			);
+
 			transaction.selection = {
-				from: newContentEnd,
-				to: newContentEnd,
+				from: finalCursorPositions.from,
+				to: finalCursorPositions.to,
 			};
 		}
 
@@ -229,4 +290,4 @@ export const applyPattern = (
 		command,
 	});
 	patternModal.open();
-};
+};;

@@ -479,7 +479,7 @@ export class SettingsTab extends PluginSettingTab {
 
 				new Setting(ruleEl)
 					.setName('Matching text (Regex)')
-					.addTextArea((text) => {
+					.addText((text) => {
 						text.setPlaceholder('')
 							.setValue(rule.from)
 							.onChange(async (value) => {
@@ -593,7 +593,7 @@ export class SettingsTab extends PluginSettingTab {
 
 				new Setting(ruleEl)
 					.setName('Replacement text')
-					.addTextArea((text) => {
+					.addText((text) => {
 						text.setPlaceholder('')
 							.setValue(rule.to)
 							.onChange(async (value) => {
@@ -782,6 +782,58 @@ export class SettingsTab extends PluginSettingTab {
 						this.display();
 					});
 			});
+
+			const patternCursorEl = patternEl.createEl('div');
+			patternCursorEl.addClass('pattern-cursor');
+
+			new Setting(patternCursorEl)
+				.setName('Cursor/selection start (Regex)')
+				.setDesc(
+					'A regular expression to determine the starting location of the cursor after the Pattern has been applied. The cursor will be placed at the ending location of the first match.',
+				)
+				.addText((text) => {
+					text.setPlaceholder('')
+						.setValue(pattern.cursorRegexStart)
+						.onChange(async (value) => {
+							const newPatterns = cloneDeep(
+								getSettings().patterns,
+							);
+							newPatterns.splice(patternIndex, 1, {
+								...patterns[patternIndex],
+								cursorRegexStart: value,
+							});
+							updateSettings({
+								patterns: newPatterns,
+							});
+
+							await this.plugin.saveSettings();
+						});
+				});
+
+			new Setting(patternCursorEl)
+				.setName('Cursor/selection end (Regex)')
+				.setDesc(
+					'A regular expression to determine the ending location of the cursor after the Pattern has been applied. The cursor will be placed at the ending location of the first match.',
+				)
+				.addText((text) => {
+					text.setPlaceholder('')
+						.setValue(pattern.cursorRegexEnd)
+						.onChange(async (value) => {
+							const newPatterns = cloneDeep(
+								getSettings().patterns,
+							);
+							newPatterns.splice(patternIndex, 1, {
+								...patterns[patternIndex],
+								cursorRegexEnd: value,
+							});
+							updateSettings({
+								patterns: newPatterns,
+							});
+
+							await this.plugin.saveSettings();
+						});
+				});
+			
 		}
 
 		const addPatternButtonEl = patternsEl.createEl('div', {

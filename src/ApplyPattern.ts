@@ -16,14 +16,14 @@ const calculateCursorPoints = (
 	lines: Array<string>,
 	cursorStartRegex: { valid: boolean | null; string: string },
 	cursorEndRegex: { valid: boolean | null; string: string },
-): {from: {line: number, ch: number}, to: {line: number, ch: number}} => {
+): { from: { line: number; ch: number }; to: { line: number; ch: number } } => {
 	let cursorStart = { line: minLine, ch: 0 };
 	let cursorEnd = { line: minLine, ch: 0 };
 
 	let cursorStartMatch = lines
 		.join('\n')
 		.match(new RegExp(cursorStartRegex.string));
-	
+
 	let cursorEndMatch = lines
 		.join('\n')
 		.match(new RegExp(cursorEndRegex.string));
@@ -54,15 +54,9 @@ const calculateCursorPoints = (
 			line: minLine + beforeCursorMatch.length - 1,
 			ch: beforeCursorMatch[beforeCursorMatch.length - 1].length,
 		};
-		console.log(57, {
-			beforeCursorMatch: beforeCursorMatch,
-			cursorEndMatch: cursorEndMatch,
-		});
 	}
 
 	const output = { from: cursorStart, to: cursorEnd };
-
-	console.log(61, output);
 
 	return output;
 };
@@ -200,11 +194,17 @@ export const applyPattern = (
 				},
 				text: updatedLines.join('\n'),
 			});
-			
-			const finalCursorPositions = calculateCursorPoints(minLine, updatedLines, cursorStartRegex, cursorEndRegex);
+
+			const finalCursorPositions = calculateCursorPoints(
+				minLine,
+				updatedLines,
+				cursorStartRegex,
+				cursorEndRegex,
+			);
 
 			transaction.selection = {
-				from: finalCursorPositions.from, to: finalCursorPositions.to
+				from: finalCursorPositions.from,
+				to: finalCursorPositions.to,
 			};
 		}
 
@@ -233,8 +233,16 @@ export const applyPattern = (
 			);
 
 			transaction.selection = {
-				from: finalCursorPositions.from,
-				to: finalCursorPositions.to,
+				from: {
+					line: finalCursorPositions.from.line,
+					ch: cursorFrom.ch + finalCursorPositions.from.ch,
+				},
+				to: {
+					line: finalCursorPositions.to.line,
+					ch:
+						finalCursorPositions.to.ch +
+						(cursorFrom.line === cursorTo.line ? cursorFrom.ch : 0),
+				},
 			};
 		}
 		if (mode === 'document') {
@@ -266,7 +274,7 @@ export const applyPattern = (
 				text: updatedDocument,
 			});
 			const newContentSplit = updatedDocument.split('\n');
-			
+
 			const finalCursorPositions = calculateCursorPoints(
 				0,
 				newContentSplit,

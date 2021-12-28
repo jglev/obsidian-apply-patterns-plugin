@@ -506,7 +506,7 @@ export class SettingsTab extends PluginSettingTab {
 
 				new Setting(ruleEl)
 					.setName('Case-insensitive')
-					.setDesc('Regex mode')
+					.setDesc('Regex mode "i"')
 					.addToggle((toggle) => {
 						toggle
 							.setTooltip('Case-insensitive')
@@ -528,7 +528,7 @@ export class SettingsTab extends PluginSettingTab {
 
 				new Setting(ruleEl)
 					.setName('Global')
-					.setDesc('Regex mode')
+					.setDesc('Regex mode "g"')
 					.addToggle((toggle) => {
 						toggle
 							.setTooltip('Global')
@@ -549,8 +549,8 @@ export class SettingsTab extends PluginSettingTab {
 					});
 
 				new Setting(ruleEl)
-					.setName('Multiline')
-					.setDesc('Regex mode')
+					.setName('Multiline off')
+					.setDesc('Regex mode "m"')
 					.addToggle((toggle) => {
 						toggle
 							.setTooltip('Multiline')
@@ -571,7 +571,7 @@ export class SettingsTab extends PluginSettingTab {
 					});
 				new Setting(ruleEl)
 					.setName('Sticky')
-					.setDesc('Regex mode')
+					.setDesc('Regex mode "s"')
 					.addToggle((toggle) => {
 						toggle
 							.setTooltip('Sticky')

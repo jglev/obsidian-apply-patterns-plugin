@@ -190,7 +190,7 @@ export const applyPattern = (
 				from: { line: minLine, ch: 0 },
 				to: {
 					line: maxLine,
-					ch: updatedLines[updatedLines.length - 1].length,
+					ch: editor.getLine(maxLine).length,
 				},
 				text: updatedLines.join('\n'),
 			});

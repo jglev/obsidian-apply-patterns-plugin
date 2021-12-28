@@ -6,11 +6,11 @@ This plugin allows creating collections of find-and-replace "rules," and applyin
 
 **Supports creating search and replace patterns of natural language dates, including ranges of dates.**
 
-> Please submit bugs here: https://github.com/publicus/obsidian-apply-patterns-plugin
+> Please submit bugs here: https://github.com/jglev/obsidian-apply-patterns-plugin
 >
-> Please submit ideas here: https://github.com/publicus/obsidian-apply-patterns-plugin/discussions/categories/ideas
+> Please submit ideas here: https://github.com/jglev/obsidian-apply-patterns-plugin/discussions/categories/ideas
 >
-> Please ask for help here: https://github.com/publicus/obsidian-apply-patterns-plugin/discussions/categories/q-a
+> Please ask for help here: https://github.com/jglev/obsidian-apply-patterns-plugin/discussions/categories/q-a
 
 ---
 
@@ -19,7 +19,7 @@ This plugin allows creating collections of find-and-replace "rules," and applyin
     <li><a href="#usage">Usage</a></li>
 </ul>
 
-For changes in each release, please check the releases page: https://github.com/publicus/obsidian-apply-patterns-plugin/releases
+For changes in each release, please check the releases page: https://github.com/jglev/obsidian-apply-patterns-plugin/releases
 
 ---
 

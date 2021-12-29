@@ -244,21 +244,23 @@ export const applyPattern = (
 				cursorEndRegex,
 			);
 
-			console.log(247, finalCursorPositions);
-
 			transaction.selection = {
 				from: {
 					line: finalCursorPositions.from.line,
-					ch: cursorFrom.ch + finalCursorPositions.from.ch,
+					ch: finalCursorPositions.from.ch,
 				},
-				to: {
+			};
+
+			if (finalCursorPositions.to) {
+				transaction.selection.to = {
 					line: finalCursorPositions.to.line,
 					ch:
 						finalCursorPositions.to.ch +
 						(cursorFrom.line === cursorTo.line ? cursorFrom.ch : 0),
-				},
-			};
+				};
+			}
 		}
+		
 		if (mode === 'document') {
 			const editorLineCount = editor.lineCount();
 			const fullDocumentSelector = {

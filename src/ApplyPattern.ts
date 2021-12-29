@@ -250,7 +250,7 @@ export const applyPattern = (
 			const fullDocumentSelector = {
 				from: { line: 0, ch: 0 },
 				to: {
-					line: editorLineCount,
+					line: editorLineCount - 1,
 					ch: editor.getLine(editorLineCount - 1).length,
 				},
 			};

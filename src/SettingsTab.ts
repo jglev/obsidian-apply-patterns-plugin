@@ -661,9 +661,10 @@ export class SettingsTab extends PluginSettingTab {
 								new Notice(
 									new RegExp(
 										fromValidated.string,
-										('u' + updatedRule.caseInsensitive
-											? 'i'
-											: '') +
+										'u' +
+											(updatedRule.caseInsensitive
+												? 'i'
+												: '') +
 											(updatedRule.global ? 'g' : '') +
 											(updatedRule.multiline ? 'm' : '') +
 											(updatedRule.sticky ? 's' : ''),

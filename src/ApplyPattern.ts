@@ -1,22 +1,27 @@
 import {
-    App,
-    Editor,
-    EditorTransaction,
-    MarkdownView,
-    Notice,
-    View,
+	App,
+	Editor,
+	EditorTransaction,
+	EditorRangeOrCaret,
+	MarkdownView,
+	Notice,
+	View,
 } from 'obsidian';
 
 import { validateRuleString } from './ValidateRuleString';
 import { PatternModal } from './PatternsModal';
 import { Command, getSettings } from './Settings';
+import { cursorTo } from 'readline';
 
 const calculateCursorPoints = (
 	minLine: number,
 	lines: Array<string>,
 	cursorStartRegex: { valid: boolean | null; string: string },
 	cursorEndRegex: { valid: boolean | null; string: string },
-): { from: { line: number; ch: number }; to: { line: number; ch: number } } => {
+): {
+	from: { line: number; ch: number };
+	to?: { line: number; ch: number };
+} => {
 	let cursorStart = { line: minLine, ch: 0 };
 	let cursorEnd = { line: minLine, ch: 0 };
 
@@ -56,7 +61,14 @@ const calculateCursorPoints = (
 		};
 	}
 
-	const output = { from: cursorStart, to: cursorEnd };
+	const output: EditorRangeOrCaret = { from: cursorStart };
+
+	if (
+		cursorStart.line !== cursorEnd.line ||
+		cursorStart.ch !== cursorEnd.ch
+	) {
+		output.to = cursorEnd;
+	}
 
 	return output;
 };
@@ -231,6 +243,8 @@ export const applyPattern = (
 				cursorStartRegex,
 				cursorEndRegex,
 			);
+
+			console.log(247, finalCursorPositions);
 
 			transaction.selection = {
 				from: {

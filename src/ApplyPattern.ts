@@ -215,11 +215,6 @@ export const applyPattern = (
 				cursorStartRegex,
 				cursorEndRegex,
 			);
-
-			transaction.selection = {
-				from: finalCursorPositions.from,
-				to: finalCursorPositions.to,
-			};
 		}
 
 		if (mode === 'selection') {
@@ -246,16 +241,9 @@ export const applyPattern = (
 				cursorEndRegex,
 			);
 
-			transaction.selection = {
-				from: {
-					line: finalCursorPositions.from.line,
-					ch: finalCursorPositions.from.ch,
-				},
-			};
-
 			if (finalCursorPositions.to) {
-				transaction.selection.to = {
-					line: finalCursorPositions.to.line,
+				finalCursorPositions.to = {
+					...finalCursorPositions.to,
 					ch:
 						finalCursorPositions.to.ch +
 						(cursorFrom.line === cursorTo.line ? cursorFrom.ch : 0),

@@ -171,6 +171,8 @@ export const applyPattern = (
 			changes: [],
 		};
 
+		let finalCursorPositions: EditorRangeOrCaret;
+
 		if (mode === 'lines') {
 			const updatedLines: string[] = [];
 			for (
@@ -207,7 +209,7 @@ export const applyPattern = (
 				text: updatedLines.join('\n'),
 			});
 
-			const finalCursorPositions = calculateCursorPoints(
+			finalCursorPositions = calculateCursorPoints(
 				minLine,
 				updatedLines,
 				cursorStartRegex,
@@ -237,7 +239,7 @@ export const applyPattern = (
 
 			const newContentSplit = updatedSelection.split('\n');
 
-			const finalCursorPositions = calculateCursorPoints(
+			finalCursorPositions = calculateCursorPoints(
 				minLine,
 				newContentSplit,
 				cursorStartRegex,
@@ -260,7 +262,7 @@ export const applyPattern = (
 				};
 			}
 		}
-		
+
 		if (mode === 'document') {
 			const editorLineCount = editor.lineCount();
 			const fullDocumentSelector = {
@@ -291,20 +293,17 @@ export const applyPattern = (
 			});
 			const newContentSplit = updatedDocument.split('\n');
 
-			const finalCursorPositions = calculateCursorPoints(
+			finalCursorPositions = calculateCursorPoints(
 				0,
 				newContentSplit,
 				cursorStartRegex,
 				cursorEndRegex,
 			);
-
-			transaction.selection = {
-				from: finalCursorPositions.from,
-				to: finalCursorPositions.to,
-			};
 		}
 
 		editor.transaction(transaction);
+
+		editor.setSelection(finalCursorPositions.from, finalCursorPositions.to);
 	};
 
 	// Need to create a new instance every time, as cursor can change.
@@ -314,4 +313,4 @@ export const applyPattern = (
 		command,
 	});
 	patternModal.open();
-};;
+};;;

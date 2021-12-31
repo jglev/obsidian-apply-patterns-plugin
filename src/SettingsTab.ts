@@ -141,7 +141,10 @@ export class SettingsTab extends PluginSettingTab {
 		patternsDefaultsEl.createEl('h3', { text: `Pattern defaults` });
 
 		new Setting(patternsDefaultsEl)
-			.setName('Default Pattern Cursor Start')
+			.setName('Post-pattern cursor/selection start (Regex)')
+			.setDesc(
+				'A regular expression to determine the default starting location of the cursor after a Pattern has been applied. The cursor will be placed at the ending location of the first match.',
+			)
 			.addText((text) => {
 				const settings = getSettings();
 				text.setValue(settings.defaultCursorRegexStart || '').onChange(
@@ -157,7 +160,10 @@ export class SettingsTab extends PluginSettingTab {
 			});
 
 		new Setting(patternsDefaultsEl)
-			.setName('Default Pattern Cursor End')
+			.setName('Post-pattern cursor/selection end (Regex)')
+			.setDesc(
+				'A regular expression to determine the default ending location of the cursor after the Pattern has been applied. The cursor will be placed at the ending location of the first match.',
+			)
 			.addText((text) => {
 				const settings = getSettings();
 				text.setValue(settings.defaultCursorRegexEnd || '').onChange(

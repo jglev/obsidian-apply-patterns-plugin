@@ -1,12 +1,12 @@
 import { Notice } from 'obsidian';
 
 import {
-    Command,
-    Pattern,
-    PatternRule,
-    formatUnnamedPattern,
-    getSettings,
-} from 'Settings';
+	Command,
+	Pattern,
+	PatternRule,
+	formatUnnamedPattern,
+	getSettings,
+} from './Settings';
 
 export const filterPatterns = (command?: Command): number[] => {
     const patterns = getSettings().patterns;

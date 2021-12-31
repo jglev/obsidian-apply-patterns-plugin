@@ -2,24 +2,15 @@
     border-top: none;
 }
 
-.patterns .pattern,
-.patterns .add-pattern-button-el,
-.commands .command,
-.commands .add-command-button-el {
-    border-top: 1px dotted var(--background-modifier-border);
-    padding: 18px 0 0 0;
+.pattern,
+.command {
+    border-top: 2px solid var(--interactive-accent);
 }
 
-.patterns .pattern .pattern-name .setting-item-info {
-    display: none;
-}
-
-.patterns .pattern .pattern-name input {
-    width: 100%;
-}
-
-.commands .command input:first-of-type {
-    margin-right: 18px;
+.pattern:nth-last-child(2),
+.command:nth-last-child(2) {
+    border-bottom: 2px solid var(--interactive-accent);
+    margin-bottom: 1em;
 }
 
 .patterns .rule.disabled,
@@ -29,66 +20,28 @@
     opacity: 50%;
 }
 
-.patterns .rule .setting-item-info .setting-item-description {
-    text-align: center;
-}
-
-.patterns .rule .checkbox-container::after,
-.commands .command .checkbox-container::after {
-    /* Get content aligned vertically and horizontally: */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 600;
-}
-
-.commands .command .checkbox-container:nth-of-type(1)::after {
-    content: "S";
-}
-.commands .command .checkbox-container:nth-of-type(2)::after {
-    content: "L";
-}
-.commands .command .checkbox-container:nth-of-type(3)::after {
-    content: "D";
-}
-
-.patterns .rule .checkbox-container:nth-of-type(1)::after {
-    content: "i";
-}
-.patterns .rule .checkbox-container:nth-of-type(2)::after {
-    content: "g";
-}
-.patterns .rule .checkbox-container:nth-of-type(3)::after {
-    content: "m";
-}
-.patterns .rule .checkbox-container:nth-of-type(4)::after {
-    content: "s";
-}
-
-.patterns .rule .setting-item-control input[type="text"]:first-of-type {
-    margin-right: 15px;
-}
-
-.patterns .rule .setting-item-control input[type="text"]:last-of-type {
-    margin-left: 15px;
-}
-
 .bold {
     font-weight: bold;
 }
 
 .pattern.collapsed [aria-label="Expand"] {
-    color: green;
+    color: var(--interactive-success);
 }
 
-.pattern.collapsed .pattern-rules {
+.pattern.collapsed .pattern-rules,
+.pattern.collapsed .pattern-cursor {
     display: none;
+}
+
+.pattern.primed div[aria-label="Delete pattern"],
+.rule.primed div[aria-label="Delete rule"],
+.command.primed div[aria-label="Delete command"] {
+    color: var(--text-error) !important;
 }
 
 .clear-settings-button.primed button {
     background-color: var(--background-modifier-error) !important;
-    color: var(--text-on-accent) !important;
+    color: var(--text-error) !important;
 }
 
 .commands .bold {

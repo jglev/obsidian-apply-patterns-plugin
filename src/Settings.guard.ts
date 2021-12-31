@@ -19,6 +19,8 @@ export function isSettings(obj: any, _argumentName?: string): obj is Settings {
         obj.commands.every((e: any) =>
             isCommand(e) as boolean
         ) &&
+        typeof obj.defaultCursorRegexStart === "string" &&
+        typeof obj.defaultCursorRegexEnd === "string" &&
         typeof obj.apiVersion === "number"
     )
 }

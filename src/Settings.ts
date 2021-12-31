@@ -9,11 +9,13 @@ export { Guards };
 
 /** @see {isSettings} ts-auto-guard:type-guard */
 export interface Settings {
-    patterns: Pattern[];
-    filterString?: string;
-    commandFilterString?: string;
-    commands: Command[];
-    apiVersion?: number;
+	patterns: Pattern[];
+	filterString?: string;
+	commandFilterString?: string;
+	commands: Command[];
+	defaultCursorRegexStart: string;
+	defaultCursorRegexEnd: string;
+	apiVersion?: number;
 }
 
 /** @see {isPattern} ts-auto-guard:type-guard */
@@ -59,7 +61,9 @@ export const defaultSettings: Settings = {
 	filterString: '',
 	commandFilterString: '',
 	commands: [],
-	apiVersion: 4,
+	apiVersion: 5,
+	defaultCursorRegexEnd: '^',
+	defaultCursorRegexStart: '$',
 };
 
 /** @see {isCommand} ts-auto-guard:type-guard */

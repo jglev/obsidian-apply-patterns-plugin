@@ -2,139 +2,182 @@ import cloneDeep from 'lodash.clonedeep';
 import { Notice, PluginSettingTab, Setting } from 'obsidian';
 import { validateRuleString } from './ValidateRuleString';
 import {
-    Command,
-    Guards,
-    Pattern,
-    PatternRule,
-    clearSettings,
-    defaultCommandSettings,
-    defaultPatternRuleSettings,
-    defaultPatternSettings,
-    formatUnnamedPattern,
-    getSettings,
-    updateSettings,
+	Command,
+	Guards,
+	Pattern,
+	PatternRule,
+	clearSettings,
+	defaultCommandSettings,
+	defaultPatternRuleSettings,
+	defaultPatternSettings,
+	defaultSettings,
+	formatUnnamedPattern,
+	getSettings,
+	updateSettings,
 } from './Settings';
 import { filterPatterns, formatPatternName } from './FilterPatterns';
 import type ApplyPatterns from './main';
 
 const moveInArray = (arr: any[], from: number, to: number) => {
-    const arrClone = cloneDeep(arr);
-    const item = arrClone[from];
-    arrClone.splice(from, 1);
-    arrClone.splice(to, 0, item);
-    return arrClone;
+	const arrClone = cloneDeep(arr);
+	const item = arrClone[from];
+	arrClone.splice(from, 1);
+	arrClone.splice(to, 0, item);
+	return arrClone;
 };
 
 export class SettingsTab extends PluginSettingTab {
-    private readonly plugin: ApplyPatterns;
+	private readonly plugin: ApplyPatterns;
 
-    constructor({ plugin }: { plugin: ApplyPatterns }) {
-        super(plugin.app, plugin);
+	constructor({ plugin }: { plugin: ApplyPatterns }) {
+		super(plugin.app, plugin);
 
-        this.plugin = plugin;
-    }
+		this.plugin = plugin;
+	}
 
-    public display(): void {
-        const { containerEl } = this;
+	public display(): void {
+		const { containerEl } = this;
 
-        containerEl.empty();
-        containerEl.createEl('h1', { text: 'Apply Patterns' });
+		containerEl.empty();
+		containerEl.createEl('h1', { text: 'Apply Patterns' });
 
-        const patternsEl = containerEl.createEl('div');
-        patternsEl.addClass('patterns');
-        const patternsDescEl = patternsEl.createEl('div', {
-            cls: 'patterns-description-el',
-        });
-        const fragment = document.createDocumentFragment();
+		const patternsEl = containerEl.createEl('div');
+		patternsEl.addClass('patterns');
+		const patternsDescEl = patternsEl.createEl('div', {
+			cls: 'patterns-description-el',
+		});
+		const fragment = document.createDocumentFragment();
 
-        patternsDescEl.createEl('p').append(
-            'This plugin allows setting "patterns" for editing text by applying sequences of "rules." Each "rule" is a find-and-replace operation, using Regular Expressions. If you are unfamiliar with Regular Expressions, you can learn more about them at ',
-            fragment.createEl('a', {
-                href: 'https://regex101.com/',
-                text: 'Regex101',
-            }),
-            ', ',
-            fragment.createEl('a', {
-                href: 'https://www.regular-expressions.info/',
-                text: 'Regular Expressions.info',
-            }),
-            ', and elsewhere. This plugin uses the ',
-            fragment.createEl('a', {
-                href: 'https://www.regular-expressions.info/javascript.html',
-                text: 'ECMAScript / Javascript flavor',
-            }),
-            ' of Regular Expressions.',
-        );
+		patternsDescEl.createEl('p').append(
+			'This plugin allows setting "patterns" for editing text by applying sequences of "rules." Each "rule" is a find-and-replace operation, using Regular Expressions. If you are unfamiliar with Regular Expressions, you can learn more about them at ',
+			fragment.createEl('a', {
+				href: 'https://regex101.com/',
+				text: 'Regex101',
+			}),
+			', ',
+			fragment.createEl('a', {
+				href: 'https://www.regular-expressions.info/',
+				text: 'Regular Expressions.info',
+			}),
+			', and elsewhere. This plugin uses the ',
+			fragment.createEl('a', {
+				href: 'https://www.regular-expressions.info/javascript.html',
+				text: 'ECMAScript / Javascript flavor',
+			}),
+			' of Regular Expressions.',
+		);
 
-        patternsDescEl.createEl(
-            'h4',
-            'Tips for the "From" and "To" fields for each rule:',
-        );
+		patternsDescEl.createEl(
+			'h4',
+			'Tips for the "From" and "To" fields for each rule:',
+		);
 
-        const patternsDescToTipsEl = patternsDescEl.createEl('ul');
+		const patternsDescToTipsEl = patternsDescEl.createEl('ul');
 
-        patternsDescToTipsEl.createEl('li').append(
-            fragment.createEl('a', {
-                href: 'https://www.regular-expressions.info/brackets.html',
-                text: 'Capture groups',
-            }),
-            ' can be referenced using "$1", "$2", etc.',
-        );
-        patternsDescToTipsEl.createEl('li').append(
-            'To ',
-            fragment.createEl('a', {
-                href: 'https://www.regular-expressions.info/characters.html',
-                text: 'escape',
-            }),
-            ' special characters, only one backslash is needed.',
-        );
+		patternsDescToTipsEl.createEl('li').append(
+			fragment.createEl('a', {
+				href: 'https://www.regular-expressions.info/brackets.html',
+				text: 'Capture groups',
+			}),
+			' can be referenced using "$1", "$2", etc.',
+		);
+		patternsDescToTipsEl.createEl('li').append(
+			'To ',
+			fragment.createEl('a', {
+				href: 'https://www.regular-expressions.info/characters.html',
+				text: 'escape',
+			}),
+			' special characters, only one backslash is needed.',
+		);
 
-        patternsDescToTipsEl.createEl('li').append(
-            'Both the "From" and "To" fields for each rule ',
-            fragment.createEl('span', {
-                text: 'will understand natural-language dates',
-                cls: 'bold',
-            }),
-            ' presented in the following format: ',
-            fragment.createEl('code', {
-                text: '{{date:start|end|format|separator}}',
-            }),
-            ', where ',
-            fragment.createEl('code', { text: 'start' }),
-            ' and ',
-            fragment.createEl('code', { text: 'end' }),
-            ' are both ',
-            fragment.createEl('a', {
-                href: 'https://github.com/wanasit/chrono',
-                text: 'English-language dates',
-            }),
-            ', and ',
-            fragment.createEl('code', { text: 'format' }),
-            ' is a format from ',
-            fragment.createEl('a', {
-                href: 'https://day.js.org/docs/en/parse/string-format#list-of-all-available-parsing-tokens',
-                text: 'DayJS',
-            }),
-            ', and ',
-            fragment.createEl('code', { text: 'separator' }),
-            ' is the string that will separate lists of dates if ',
-            fragment.createEl('code', { text: 'start' }),
-            ' and ',
-            fragment.createEl('code', { text: 'end' }),
-            ' are both set and are set to different days. All fields are optional. Using just ',
-            fragment.createEl('code', { text: '{{date}}' }),
-            ' (or ',
-            fragment.createEl('code', { text: '{{date||YYYY-MM-DD}}' }),
-            "), will evaluate to today's date in YYYY-MM-DD format.",
-        );
+		patternsDescToTipsEl.createEl('li').append(
+			'Both the "From" and "To" fields for each rule ',
+			fragment.createEl('span', {
+				text: 'will understand natural-language dates',
+				cls: 'bold',
+			}),
+			' presented in the following format: ',
+			fragment.createEl('code', {
+				text: '{{date:start|end|format|separator}}',
+			}),
+			', where ',
+			fragment.createEl('code', { text: 'start' }),
+			' and ',
+			fragment.createEl('code', { text: 'end' }),
+			' are both ',
+			fragment.createEl('a', {
+				href: 'https://github.com/wanasit/chrono',
+				text: 'English-language dates',
+			}),
+			', and ',
+			fragment.createEl('code', { text: 'format' }),
+			' is a format from ',
+			fragment.createEl('a', {
+				href: 'https://day.js.org/docs/en/parse/string-format#list-of-all-available-parsing-tokens',
+				text: 'DayJS',
+			}),
+			', and ',
+			fragment.createEl('code', { text: 'separator' }),
+			' is the string that will separate lists of dates if ',
+			fragment.createEl('code', { text: 'start' }),
+			' and ',
+			fragment.createEl('code', { text: 'end' }),
+			' are both set and are set to different days. All fields are optional. Using just ',
+			fragment.createEl('code', { text: '{{date}}' }),
+			' (or ',
+			fragment.createEl('code', { text: '{{date||YYYY-MM-DD}}' }),
+			"), will evaluate to today's date in YYYY-MM-DD format.",
+		);
 
-        patternsEl.createEl('h2', { text: 'Patterns' });
-        patternsEl.createEl('div', {
-            text: 'Combinations of find-and-replace "rules" that can be applied to highlighted lines of text.',
-            cls: 'setting-item-description',
-        });
+		patternsEl.createEl('h2', { text: 'Patterns' });
+		patternsEl.createEl('div', {
+			text: 'Combinations of find-and-replace "rules" that can be applied to highlighted lines of text.',
+			cls: 'setting-item-description',
+		});
 
-        new Setting(patternsEl)
+		const patternsDefaultsEl = patternsEl.createEl('div', {
+			cls: 'pattern-defaults',
+		});
+		patternsDefaultsEl.createEl('h3', { text: `Pattern defaults` });
+
+		new Setting(patternsDefaultsEl)
+			.setName('Default Pattern Cursor Start')
+			.addText((text) => {
+				const settings = getSettings();
+				text.setValue(settings.defaultCursorRegexStart || '').onChange(
+					async (value) => {
+						updateSettings({
+							...cloneDeep(getSettings()),
+							defaultCursorRegexStart: value,
+						});
+
+						await this.plugin.saveSettings();
+					},
+				);
+			});
+
+		new Setting(patternsDefaultsEl)
+			.setName('Default Pattern Cursor End')
+			.addText((text) => {
+				const settings = getSettings();
+				text.setValue(settings.defaultCursorRegexEnd || '').onChange(
+					async (value) => {
+						updateSettings({
+							...cloneDeep(getSettings()),
+							defaultCursorRegexEnd: value,
+						});
+
+						await this.plugin.saveSettings();
+					},
+				);
+			});
+
+		const patternsFilterEl = patternsEl.createEl('div', {
+			cls: 'pattern-filters',
+		});
+		patternsFilterEl.createEl('h3', { text: `Filter patterns` });
+
+		new Setting(patternsFilterEl)
 			.setName('Filter patterns by name')
 			.addText((text) => {
 				const settings = getSettings();
@@ -150,16 +193,18 @@ export class SettingsTab extends PluginSettingTab {
 				);
 			});
 
-		new Setting(patternsEl).setName('Apply filter').addButton((button) => {
-			button
-				.setIcon('magnifying-glass')
-				.setTooltip('Filter Patterns')
-				.onClick(async () => {
-					this.display();
-				});
-		});
+		new Setting(patternsFilterEl)
+			.setName('Apply filter')
+			.addButton((button) => {
+				button
+					.setIcon('magnifying-glass')
+					.setTooltip('Filter Patterns')
+					.onClick(async () => {
+						this.display();
+					});
+			});
 
-		new Setting(patternsEl)
+		new Setting(patternsFilterEl)
 			.setName('Expand / Collapse all patterns')
 			.addExtraButton((button) => {
 				const settings = getSettings();
@@ -834,7 +879,6 @@ export class SettingsTab extends PluginSettingTab {
 							await this.plugin.saveSettings();
 						});
 				});
-			
 		}
 
 		const addPatternButtonEl = patternsEl.createEl('div', {
@@ -849,7 +893,15 @@ export class SettingsTab extends PluginSettingTab {
 					updateSettings({
 						patterns: [
 							...getSettings().patterns,
-							{ ...defaultPatternSettings },
+							{
+								...defaultPatternSettings,
+								cursorRegexStart:
+									getSettings().defaultCursorRegexStart ||
+									defaultSettings.defaultCursorRegexStart,
+								cursorRegexEnd:
+									getSettings().defaultCursorRegexEnd ||
+									defaultSettings.defaultCursorRegexEnd,
+							},
 						],
 					});
 					await this.plugin.saveSettings();
@@ -943,7 +995,6 @@ export class SettingsTab extends PluginSettingTab {
 							await this.plugin.saveSettings();
 						});
 				});
-
 
 			let deleteCommandPrimed = false;
 			let commandDeletePrimerTimer: ReturnType<typeof setTimeout> | null;
@@ -1355,5 +1406,5 @@ export class SettingsTab extends PluginSettingTab {
 					button.setButtonText('Click again to clear settings');
 				});
 			});
-    }
+	}
 }

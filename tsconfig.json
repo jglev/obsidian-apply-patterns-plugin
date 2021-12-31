@@ -11,7 +11,8 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "lib": [
-      "ES2020"
+      "ES2020",
+      "dom"
     ]
   },
   "include": [

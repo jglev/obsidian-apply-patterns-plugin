@@ -34,7 +34,8 @@
 }
 
 .pattern.primed div[aria-label="Delete pattern"],
-.rule.primed div[aria-label="Delete rule"] {
+.rule.primed div[aria-label="Delete rule"],
+.command.primed div[aria-label="Delete command"] {
     color: var(--text-error) !important;
 }
 

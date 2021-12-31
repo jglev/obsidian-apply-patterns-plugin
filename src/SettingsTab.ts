@@ -944,6 +944,10 @@ export class SettingsTab extends PluginSettingTab {
 						});
 				});
 
+
+			let deleteCommandPrimed = false;
+			let commandDeletePrimerTimer: ReturnType<typeof setTimeout> | null;
+
 			new Setting(commandEl)
 				.setName('Command meta controls')
 				.addExtraButton((button) => {
@@ -1020,16 +1024,38 @@ export class SettingsTab extends PluginSettingTab {
 						.setIcon('cross-in-box')
 						.setTooltip('Delete command')
 						.onClick(async () => {
-							const newCommands = cloneDeep(
-								getSettings().commands,
-							);
-							newCommands.splice(commandIndex, 1);
-							updateSettings({
-								commands: newCommands,
-							});
+							if (commandDeletePrimerTimer) {
+								clearTimeout(commandDeletePrimerTimer);
+							}
+							if (deleteCommandPrimed === true) {
+								const newCommands = cloneDeep(
+									getSettings().commands,
+								);
+								newCommands.splice(commandIndex, 1);
+								updateSettings({
+									commands: newCommands,
+								});
 
-							await this.plugin.saveSettings();
-							this.display();
+								await this.plugin.saveSettings();
+								this.display();
+								return;
+							}
+
+							commandDeletePrimerTimer = setTimeout(
+								() => {
+									deleteCommandPrimed = false;
+									commandEl.removeClass('primed');
+								},
+								1000 * 4, // 4 second timeout
+							);
+							deleteCommandPrimed = true;
+							commandEl.addClass('primed');
+
+							new Notice(
+								`Click again to delete Command ${
+									commandIndex + 1
+								}`,
+							);
 						});
 				});
 

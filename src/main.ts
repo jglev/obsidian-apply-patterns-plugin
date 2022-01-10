@@ -119,6 +119,7 @@ export default class ApplyPatternsPlugin extends Plugin {
 
 		// Update settings if the API version has been incremented:
 		if (
+			userSettings === null ||
 			userSettings.apiVersion === null ||
 			userSettings.apiVersion < defaultSettings.apiVersion
 		) {

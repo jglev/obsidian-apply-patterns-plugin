@@ -301,4 +301,4 @@ export const applyPattern = (
 		command,
 	});
 	patternModal.open();
-};;;
+};

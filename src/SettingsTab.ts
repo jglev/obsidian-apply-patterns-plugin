@@ -528,7 +528,17 @@ export class SettingsTab extends PluginSettingTab {
 							});
 					});
 
-				new Setting(ruleEl)
+				const ruleFromEl = ruleEl.createEl('div');
+				const ruleFromElSetting = new Setting(ruleFromEl);
+				const ruleFromValidEl = ruleFromEl.createEl('span');
+				ruleFromValidEl.addClass('validation-text');
+				const ruleFromValid = validateRuleString(rule.from);
+				if (ruleFromValid.valid !== true) {
+					ruleFromEl.addClass('invalid');
+					ruleFromValidEl.setText(ruleFromValid.string);
+				}
+
+				ruleFromElSetting
 					.setName('Matching text (Regex)')
 					.addText((text) => {
 						text.setPlaceholder('')
@@ -552,6 +562,15 @@ export class SettingsTab extends PluginSettingTab {
 								});
 
 								await this.plugin.saveSettings();
+
+								const valueValid = validateRuleString(value);
+								if (valueValid.valid === true) {
+									ruleFromEl.removeClass('invalid');
+									ruleFromValidEl.setText('');
+								} else {
+									ruleFromEl.addClass('invalid');
+									ruleFromValidEl.setText(valueValid.string);
+								}
 							});
 					});
 
@@ -642,32 +661,51 @@ export class SettingsTab extends PluginSettingTab {
 							});
 					});
 
-				new Setting(ruleEl)
-					.setName('Replacement text')
-					.addText((text) => {
-						text.setPlaceholder('')
-							.setValue(rule.to)
-							.onChange(async (value) => {
-								const newPatterns = cloneDeep(
-									getSettings().patterns,
-								);
-								newPatterns[patternIndex].rules.splice(
-									ruleIndex,
-									1,
-									{
-										...newPatterns[patternIndex].rules[
-											ruleIndex
-										],
-										to: value || '',
-									},
-								);
-								updateSettings({
-									patterns: newPatterns,
-								});
+				const ruleToEl = ruleEl.createEl('div');
+				const ruleToElSetting = new Setting(ruleToEl);
+				const ruleToValidEl = ruleFromEl.createEl('span');
+				ruleToValidEl.addClass('validation-text');
+				const ruleToValid = validateRuleString(rule.to, false);
 
-								await this.plugin.saveSettings();
+				if (ruleToValid.valid !== null) {
+					ruleToEl.addClass('invalid');
+					ruleToValidEl.setText(ruleToValid.string);
+				}
+
+				ruleToElSetting.setName('Replacement text').addText((text) => {
+					text.setPlaceholder('')
+						.setValue(rule.to)
+						.onChange(async (value) => {
+							const newPatterns = cloneDeep(
+								getSettings().patterns,
+							);
+							newPatterns[patternIndex].rules.splice(
+								ruleIndex,
+								1,
+								{
+									...newPatterns[patternIndex].rules[
+										ruleIndex
+									],
+									to: value || '',
+								},
+							);
+							updateSettings({
+								patterns: newPatterns,
 							});
-					});
+
+							await this.plugin.saveSettings();
+
+							const valueValid = validateRuleString(value, false);
+
+							if (valueValid.valid === null) {
+								ruleToEl.removeClass('invalid');
+								ruleToValidEl.setText('');
+							} else {
+								ruleToEl.addClass('invalid');
+								ruleToValidEl.setText(valueValid.string);
+							}
+						});
+				});
 
 				let deleteRulePrimed = false;
 				let ruleDeletePrimerTimer: ReturnType<typeof setTimeout> | null;
@@ -1116,7 +1154,25 @@ export class SettingsTab extends PluginSettingTab {
 						});
 				});
 
-			new Setting(commandEl)
+			const commandPatternNameEl = commandEl.createEl('div');
+			const commandPatternNameSetting = new Setting(commandPatternNameEl);
+			const commandPatternNameValidEl =
+				commandPatternNameEl.createEl('span');
+			commandPatternNameValidEl.addClass('validation-text');
+			const commandPatternNameValid = validateRuleString(
+				command.patternFilter,
+			);
+
+			console.log(1166, commandPatternNameValid);
+
+			if (commandPatternNameValid.valid !== true) {
+				commandPatternNameEl.addClass('invalid');
+				commandPatternNameValidEl.setText(
+					commandPatternNameValid.string,
+				);
+			}
+
+			commandPatternNameSetting
 				.setName('Pattern name filter')
 				.addText((text) => {
 					text.setPlaceholder('')
@@ -1134,6 +1190,18 @@ export class SettingsTab extends PluginSettingTab {
 							});
 
 							await this.plugin.saveSettings();
+
+							const valueValid = validateRuleString(value);
+
+							if (valueValid.valid === true) {
+								commandPatternNameEl.removeClass('invalid');
+								commandPatternNameValidEl.setText('');
+							} else {
+								commandPatternNameEl.addClass('invalid');
+								commandPatternNameValidEl.setText(
+									valueValid.string,
+								);
+							}
 						});
 				});
 

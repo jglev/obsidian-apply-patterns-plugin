@@ -140,7 +140,22 @@ export class SettingsTab extends PluginSettingTab {
 		});
 		patternsDefaultsEl.createEl('h3', { text: `Pattern defaults` });
 
-		new Setting(patternsDefaultsEl)
+		const patternsDefaultStartEl = patternsDefaultsEl.createEl('div');
+		const patternsDefaultStartSetting = new Setting(patternsDefaultStartEl);
+		const patternsDefaultStartValidEl =
+			patternsDefaultStartEl.createEl('span');
+		patternsDefaultStartValidEl.addClass('validation-text');
+		const patternsDefaultStartValid = validateRuleString(
+			getSettings().defaultCursorRegexStart || '',
+		);
+		if (patternsDefaultStartValid.valid !== true) {
+			patternsDefaultStartEl.addClass('invalid');
+			patternsDefaultStartValidEl.setText(
+				patternsDefaultStartValid.string,
+			);
+		}
+
+		patternsDefaultStartSetting
 			.setName('Post-pattern cursor/selection start (Regex)')
 			.setDesc(
 				'A regular expression to determine the default starting location of the cursor after a Pattern has been applied. The cursor will be placed at the ending location of the first match.',
@@ -155,11 +170,34 @@ export class SettingsTab extends PluginSettingTab {
 						});
 
 						await this.plugin.saveSettings();
+
+						const valueValid = validateRuleString(value);
+						if (valueValid.valid === true) {
+							patternsDefaultStartEl.removeClass('invalid');
+							patternsDefaultStartValidEl.setText('');
+						} else {
+							patternsDefaultStartEl.addClass('invalid');
+							patternsDefaultStartValidEl.setText(
+								valueValid.string,
+							);
+						}
 					},
 				);
 			});
 
-		new Setting(patternsDefaultsEl)
+		const patternsDefaultEndEl = patternsDefaultsEl.createEl('div');
+		const patternsDefaultEndSetting = new Setting(patternsDefaultEndEl);
+		const patternsDefaultEndValidEl = patternsDefaultEndEl.createEl('span');
+		patternsDefaultEndValidEl.addClass('validation-text');
+		const patternsDefaultEndValid = validateRuleString(
+			getSettings().defaultCursorRegexEnd || '',
+		);
+		if (patternsDefaultEndValid.valid !== true) {
+			patternsDefaultEndEl.addClass('invalid');
+			patternsDefaultEndValidEl.setText(patternsDefaultEndValid.string);
+		}
+
+		patternsDefaultEndSetting
 			.setName('Post-pattern cursor/selection end (Regex)')
 			.setDesc(
 				'A regular expression to determine the default ending location of the cursor after the Pattern has been applied. The cursor will be placed at the ending location of the first match.',
@@ -174,6 +212,17 @@ export class SettingsTab extends PluginSettingTab {
 						});
 
 						await this.plugin.saveSettings();
+
+						const valueValid = validateRuleString(value);
+						if (valueValid.valid === true) {
+							patternsDefaultEndEl.removeClass('invalid');
+							patternsDefaultEndValidEl.setText('');
+						} else {
+							patternsDefaultEndEl.addClass('invalid');
+							patternsDefaultEndValidEl.setText(
+								valueValid.string,
+							);
+						}
 					},
 				);
 			});
@@ -876,7 +925,22 @@ export class SettingsTab extends PluginSettingTab {
 			const patternCursorEl = patternEl.createEl('div');
 			patternCursorEl.addClass('pattern-cursor');
 
-			new Setting(patternCursorEl)
+			const patternCursorStartEl = patternCursorEl.createEl('div');
+			const patternCursorStartSetting = new Setting(patternCursorStartEl);
+			const patternCursorStartValidEl =
+				patternCursorStartEl.createEl('span');
+			patternCursorStartValidEl.addClass('validation-text');
+			const patternCursorStartValid = validateRuleString(
+				pattern.cursorRegexStart,
+			);
+			if (patternCursorStartValid.valid !== true) {
+				patternCursorStartEl.addClass('invalid');
+				patternCursorStartValidEl.setText(
+					patternCursorStartValid.string,
+				);
+			}
+
+			patternCursorStartSetting
 				.setName('Cursor/selection start (Regex)')
 				.setDesc(
 					'A regular expression to determine the starting location of the cursor after the Pattern has been applied. The cursor will be placed at the ending location of the first match.',
@@ -897,10 +961,33 @@ export class SettingsTab extends PluginSettingTab {
 							});
 
 							await this.plugin.saveSettings();
+
+							const valueValid = validateRuleString(value);
+							if (valueValid.valid === true) {
+								patternCursorStartEl.removeClass('invalid');
+								patternCursorStartValidEl.setText('');
+							} else {
+								patternCursorStartEl.addClass('invalid');
+								patternCursorStartValidEl.setText(
+									valueValid.string,
+								);
+							}
 						});
 				});
 
-			new Setting(patternCursorEl)
+			const patternCursorEndEl = patternCursorEl.createEl('div');
+			const patternCursorEndSetting = new Setting(patternCursorEndEl);
+			const patternCursorEndValidEl = patternCursorEndEl.createEl('span');
+			patternCursorEndValidEl.addClass('validation-text');
+			const patternCursorEndValid = validateRuleString(
+				pattern.cursorRegexEnd,
+			);
+			if (patternCursorEndValid.valid !== true) {
+				patternCursorEndEl.addClass('invalid');
+				patternCursorEndValidEl.setText(patternCursorEndValid.string);
+			}
+
+			patternCursorEndSetting
 				.setName('Cursor/selection end (Regex)')
 				.setDesc(
 					'A regular expression to determine the ending location of the cursor after the Pattern has been applied. The cursor will be placed at the ending location of the first match.',
@@ -921,6 +1008,17 @@ export class SettingsTab extends PluginSettingTab {
 							});
 
 							await this.plugin.saveSettings();
+
+							const valueValid = validateRuleString(value);
+							if (valueValid.valid === true) {
+								patternCursorEndEl.removeClass('invalid');
+								patternCursorEndValidEl.setText('');
+							} else {
+								patternCursorEndEl.addClass('invalid');
+								patternCursorEndValidEl.setText(
+									valueValid.string,
+								);
+							}
 						});
 				});
 		}
@@ -1162,8 +1260,6 @@ export class SettingsTab extends PluginSettingTab {
 			const commandPatternNameValid = validateRuleString(
 				command.patternFilter,
 			);
-
-			console.log(1166, commandPatternNameValid);
 
 			if (commandPatternNameValid.valid !== true) {
 				commandPatternNameEl.addClass('invalid');

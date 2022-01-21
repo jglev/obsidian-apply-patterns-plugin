@@ -68,19 +68,23 @@ export const defaultSettings: Settings = {
 
 /** @see {isCommand} ts-auto-guard:type-guard */
 export interface Command {
-    name: string;
-    patternFilter: string;
-    selection?: boolean;
-    lines?: boolean;
-    document?: boolean;
+	name: string;
+	patternFilter: string;
+	selection?: boolean;
+	lines?: boolean;
+	document?: boolean;
+	clipboard?: boolean;
+	clipboardLines?: boolean;
 }
 
 export const defaultCommandSettings: Command = {
-    name: '',
-    patternFilter: '',
-    selection: true,
-    lines: true,
-    document: true,
+	name: '',
+	patternFilter: '',
+	selection: true,
+	lines: true,
+	document: true,
+	clipboard: false,
+	clipboardLines: false,
 };
 
 export const formatUnnamedPattern = (patternIndex: number): string =>

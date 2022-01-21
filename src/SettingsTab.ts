@@ -1192,6 +1192,50 @@ export class SettingsTab extends PluginSettingTab {
 							await this.plugin.saveSettings();
 						});
 				});
+
+			new Setting(commandEl)
+				.setName('Apply to whole clipboard')
+				.setDesc(
+					'Apply the Pattern as with "Apply to whole document" to the clipboard.',
+				)
+				.addToggle((toggle) => {
+					toggle
+						.setTooltip('Apply to whole whole clipboard')
+						.setValue(command.clipboard || false)
+						.onChange(async (value) => {
+							const newCommands = cloneDeep(
+								getSettings().commands,
+							);
+							newCommands[commandIndex].clipboard = value;
+							updateSettings({
+								commands: newCommands,
+							});
+
+							await this.plugin.saveSettings();
+						});
+				});
+
+			new Setting(commandEl)
+				.setName('Apply to clipboard (line-by-line)')
+				.setDesc(
+					'Apply the Pattern as with "Apply to whole lines" to the clipboard.',
+				)
+				.addToggle((toggle) => {
+					toggle
+						.setTooltip('Apply to whole whole clipboard')
+						.setValue(command.clipboardLines || false)
+						.onChange(async (value) => {
+							const newCommands = cloneDeep(
+								getSettings().commands,
+							);
+							newCommands[commandIndex].clipboardLines = value;
+							updateSettings({
+								commands: newCommands,
+							});
+
+							await this.plugin.saveSettings();
+						});
+				});
 		}
 
 		const addCommandButtonEl = commandsEl.createEl('div', {

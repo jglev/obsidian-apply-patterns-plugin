@@ -25,48 +25,40 @@ export default class ApplyPatternsPlugin extends Plugin {
 		this.addCommand({
 			id: 'apply-pattern-to-lines',
 			name: 'Apply pattern to whole lines',
-			editorCheckCallback: (
-				checking: boolean,
-				editor: Editor,
-				view: View,
-			) => {
-				return applyPattern(checking, editor, view, this.app, 'lines');
+			editorCallback: (editor: Editor, view: View) => {
+				return applyPattern(editor, view, this.app, 'lines');
 			},
 		});
 
 		this.addCommand({
 			id: 'apply-pattern-to-selection',
 			name: 'Apply pattern to selection',
-			editorCheckCallback: (
-				checking: boolean,
-				editor: Editor,
-				view: View,
-			) => {
-				return applyPattern(
-					checking,
-					editor,
-					view,
-					this.app,
-					'selection',
-				);
+			editorCallback: (editor: Editor, view: View) => {
+				return applyPattern(editor, view, this.app, 'selection');
 			},
 		});
 
 		this.addCommand({
 			id: 'apply-pattern-to-document',
 			name: 'Apply pattern to whole document',
-			editorCheckCallback: (
-				checking: boolean,
-				editor: Editor,
-				view: View,
-			) => {
-				return applyPattern(
-					checking,
-					editor,
-					view,
-					this.app,
-					'document',
-				);
+			editorCallback: (editor: Editor, view: View) => {
+				return applyPattern(editor, view, this.app, 'document');
+			},
+		});
+
+		this.addCommand({
+			id: 'apply-pattern-to-clipboard-document',
+			name: 'Apply pattern to whole clipboard',
+			editorCallback: (editor: Editor, view: View) => {
+				return applyPattern(editor, view, this.app, 'clipboard');
+			},
+		});
+
+		this.addCommand({
+			id: 'apply-pattern-to-clipboard-lines',
+			name: 'Apply pattern to clipboard (line-by-line)',
+			editorCallback: (editor: Editor, view: View) => {
+				return applyPattern(editor, view, this.app, 'clipboardLines');
 			},
 		});
 
@@ -77,6 +69,8 @@ export default class ApplyPatternsPlugin extends Plugin {
 					selection: 'selection',
 					lines: 'whole lines',
 					document: 'whole document',
+					clipboard: 'whole clipboard',
+					clipboardLines: 'clipboard (line-by-line)',
 				})) {
 					// Get TypeScript to understand type as a key, rather than
 					// as a string. See https://stackoverflow.com/a/62438434
@@ -89,13 +83,11 @@ export default class ApplyPatternsPlugin extends Plugin {
 								command.name ||
 								'Unnamed command ' + commandIndex
 							} on ${plainLanguage}`,
-							editorCheckCallback: (
-								checking: boolean,
+							editorCallback: async (
 								editor: Editor,
 								view: View,
 							) => {
 								return applyPattern(
-									checking,
 									editor,
 									view,
 									this.app,

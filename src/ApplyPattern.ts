@@ -11,7 +11,6 @@ import {
 import { validateRuleString } from './ValidateRuleString';
 import { PatternModal } from './PatternsModal';
 import { Command, getSettings } from './Settings';
-import { cursorTo } from 'readline';
 
 const calculateCursorPoints = (
 	minLine: number,
@@ -74,21 +73,18 @@ const calculateCursorPoints = (
 };
 
 export const applyPattern = (
-	checking: boolean,
 	editor: Editor,
 	view: View,
 	app: App,
-	mode: 'lines' | 'selection' | 'document' = 'lines',
+	mode:
+		| 'lines'
+		| 'selection'
+		| 'document'
+		| 'clipboard'
+		| 'clipboardLines' = 'lines',
 	command?: Command,
 ) => {
-	if (checking) {
-		// editorCallback always happens in a MarkdownView; the command should
-		// only be shown in MarkdownView:
-		return true;
-	}
-
 	if (!(view instanceof MarkdownView)) {
-		// Should never happen due to check above.
 		return;
 	}
 
@@ -100,10 +96,6 @@ export const applyPattern = (
 
 	const onChooseItem = (patternIndex: number): void => {
 		const pattern = getSettings().patterns[patternIndex];
-		const cursorFrom = editor.getCursor('from');
-		const cursorTo = editor.getCursor('to');
-		const minLine = cursorFrom.line;
-		const maxLine = cursorTo.line;
 
 		// Confirm that each rule's strings are valid:
 		let allValid = true;
@@ -166,6 +158,68 @@ export const applyPattern = (
 		if (allValid !== true) {
 			return; // Stop the function prematurely
 		}
+
+		if (mode === 'clipboard' || mode === 'clipboardLines') {
+			// This is largely the same as the 'document' mode code, but using
+			// the clipboard as input.
+			navigator.clipboard.readText().then((clipboardText) => {
+				if (mode === 'clipboard') {
+					pattern.rules.forEach((rule, ruleIndex) => {
+						clipboardText = clipboardText.replace(
+							new RegExp(
+								allRuleStringsValidated[ruleIndex].from,
+								`u${rule.caseInsensitive ? 'i' : ''}${
+									rule.global ? 'g' : ''
+								}${rule.multiline ? 'm' : ''}${
+									rule.sticky ? 's' : ''
+								}`,
+							),
+							allRuleStringsValidated[ruleIndex].to,
+						);
+					});
+				}
+				if (mode === 'clipboardLines') {
+					const clipboardTextSplit = clipboardText.split('\n');
+					const updatedLines: string[] = [];
+					for (
+						let lineNumber = 0;
+						lineNumber < clipboardTextSplit.length;
+						lineNumber++
+					) {
+						let line = clipboardTextSplit[lineNumber];
+						pattern.rules.forEach((rule, ruleIndex) => {
+							if (rule.disabled === true) {
+								// Skip the rule if it's disabled:
+								return;
+							}
+							line = line.replace(
+								new RegExp(
+									allRuleStringsValidated[ruleIndex].from,
+									`u${rule.caseInsensitive ? 'i' : ''}${
+										rule.global ? 'g' : ''
+									}${rule.multiline ? 'm' : ''}${
+										rule.sticky ? 's' : ''
+									}`,
+								),
+								allRuleStringsValidated[ruleIndex].to,
+							);
+						});
+						updatedLines.push(line);
+					}
+					clipboardText = updatedLines.join('\n');
+				}
+
+				navigator.clipboard.writeText(clipboardText);
+
+				new Notice('Clipboard updated.');
+			});
+			return;
+		}
+
+		const cursorFrom = editor.getCursor('from');
+		const cursorTo = editor.getCursor('to');
+		const minLine = cursorFrom.line;
+		const maxLine = cursorTo.line;
 
 		const transaction: EditorTransaction = {
 			changes: [],

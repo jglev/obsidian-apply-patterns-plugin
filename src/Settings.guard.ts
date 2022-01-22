@@ -65,6 +65,8 @@ export function isCommand(obj: any, _argumentName?: string): obj is Command {
         typeof obj.patternFilter === "string" &&
         typeof obj.selection === "boolean" &&
         typeof obj.lines === "boolean" &&
-        typeof obj.document === "boolean"
+        typeof obj.document === "boolean" &&
+        typeof obj.clipboard === "boolean" &&
+        typeof obj.clipboardLines === "boolean"
     )
 }

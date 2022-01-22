@@ -140,7 +140,22 @@ export class SettingsTab extends PluginSettingTab {
 		});
 		patternsDefaultsEl.createEl('h3', { text: `Pattern defaults` });
 
-		new Setting(patternsDefaultsEl)
+		const patternsDefaultStartEl = patternsDefaultsEl.createEl('div');
+		const patternsDefaultStartSetting = new Setting(patternsDefaultStartEl);
+		const patternsDefaultStartValidEl =
+			patternsDefaultStartEl.createEl('span');
+		patternsDefaultStartValidEl.addClass('validation-text');
+		const patternsDefaultStartValid = validateRuleString(
+			getSettings().defaultCursorRegexStart || '',
+		);
+		if (patternsDefaultStartValid.valid !== true) {
+			patternsDefaultStartEl.addClass('invalid');
+			patternsDefaultStartValidEl.setText(
+				patternsDefaultStartValid.string,
+			);
+		}
+
+		patternsDefaultStartSetting
 			.setName('Post-pattern cursor/selection start (Regex)')
 			.setDesc(
 				'A regular expression to determine the default starting location of the cursor after a Pattern has been applied. The cursor will be placed at the ending location of the first match.',
@@ -155,11 +170,34 @@ export class SettingsTab extends PluginSettingTab {
 						});
 
 						await this.plugin.saveSettings();
+
+						const valueValid = validateRuleString(value);
+						if (valueValid.valid === true) {
+							patternsDefaultStartEl.removeClass('invalid');
+							patternsDefaultStartValidEl.setText('');
+						} else {
+							patternsDefaultStartEl.addClass('invalid');
+							patternsDefaultStartValidEl.setText(
+								valueValid.string,
+							);
+						}
 					},
 				);
 			});
 
-		new Setting(patternsDefaultsEl)
+		const patternsDefaultEndEl = patternsDefaultsEl.createEl('div');
+		const patternsDefaultEndSetting = new Setting(patternsDefaultEndEl);
+		const patternsDefaultEndValidEl = patternsDefaultEndEl.createEl('span');
+		patternsDefaultEndValidEl.addClass('validation-text');
+		const patternsDefaultEndValid = validateRuleString(
+			getSettings().defaultCursorRegexEnd || '',
+		);
+		if (patternsDefaultEndValid.valid !== true) {
+			patternsDefaultEndEl.addClass('invalid');
+			patternsDefaultEndValidEl.setText(patternsDefaultEndValid.string);
+		}
+
+		patternsDefaultEndSetting
 			.setName('Post-pattern cursor/selection end (Regex)')
 			.setDesc(
 				'A regular expression to determine the default ending location of the cursor after the Pattern has been applied. The cursor will be placed at the ending location of the first match.',
@@ -174,6 +212,17 @@ export class SettingsTab extends PluginSettingTab {
 						});
 
 						await this.plugin.saveSettings();
+
+						const valueValid = validateRuleString(value);
+						if (valueValid.valid === true) {
+							patternsDefaultEndEl.removeClass('invalid');
+							patternsDefaultEndValidEl.setText('');
+						} else {
+							patternsDefaultEndEl.addClass('invalid');
+							patternsDefaultEndValidEl.setText(
+								valueValid.string,
+							);
+						}
 					},
 				);
 			});
@@ -528,7 +577,17 @@ export class SettingsTab extends PluginSettingTab {
 							});
 					});
 
-				new Setting(ruleEl)
+				const ruleFromEl = ruleEl.createEl('div');
+				const ruleFromElSetting = new Setting(ruleFromEl);
+				const ruleFromValidEl = ruleFromEl.createEl('span');
+				ruleFromValidEl.addClass('validation-text');
+				const ruleFromValid = validateRuleString(rule.from);
+				if (ruleFromValid.valid !== true) {
+					ruleFromEl.addClass('invalid');
+					ruleFromValidEl.setText(ruleFromValid.string);
+				}
+
+				ruleFromElSetting
 					.setName('Matching text (Regex)')
 					.addText((text) => {
 						text.setPlaceholder('')
@@ -552,6 +611,15 @@ export class SettingsTab extends PluginSettingTab {
 								});
 
 								await this.plugin.saveSettings();
+
+								const valueValid = validateRuleString(value);
+								if (valueValid.valid === true) {
+									ruleFromEl.removeClass('invalid');
+									ruleFromValidEl.setText('');
+								} else {
+									ruleFromEl.addClass('invalid');
+									ruleFromValidEl.setText(valueValid.string);
+								}
 							});
 					});
 
@@ -642,32 +710,51 @@ export class SettingsTab extends PluginSettingTab {
 							});
 					});
 
-				new Setting(ruleEl)
-					.setName('Replacement text')
-					.addText((text) => {
-						text.setPlaceholder('')
-							.setValue(rule.to)
-							.onChange(async (value) => {
-								const newPatterns = cloneDeep(
-									getSettings().patterns,
-								);
-								newPatterns[patternIndex].rules.splice(
-									ruleIndex,
-									1,
-									{
-										...newPatterns[patternIndex].rules[
-											ruleIndex
-										],
-										to: value || '',
-									},
-								);
-								updateSettings({
-									patterns: newPatterns,
-								});
+				const ruleToEl = ruleEl.createEl('div');
+				const ruleToElSetting = new Setting(ruleToEl);
+				const ruleToValidEl = ruleFromEl.createEl('span');
+				ruleToValidEl.addClass('validation-text');
+				const ruleToValid = validateRuleString(rule.to, false);
 
-								await this.plugin.saveSettings();
+				if (ruleToValid.valid !== null) {
+					ruleToEl.addClass('invalid');
+					ruleToValidEl.setText(ruleToValid.string);
+				}
+
+				ruleToElSetting.setName('Replacement text').addText((text) => {
+					text.setPlaceholder('')
+						.setValue(rule.to)
+						.onChange(async (value) => {
+							const newPatterns = cloneDeep(
+								getSettings().patterns,
+							);
+							newPatterns[patternIndex].rules.splice(
+								ruleIndex,
+								1,
+								{
+									...newPatterns[patternIndex].rules[
+										ruleIndex
+									],
+									to: value || '',
+								},
+							);
+							updateSettings({
+								patterns: newPatterns,
 							});
-					});
+
+							await this.plugin.saveSettings();
+
+							const valueValid = validateRuleString(value, false);
+
+							if (valueValid.valid === null) {
+								ruleToEl.removeClass('invalid');
+								ruleToValidEl.setText('');
+							} else {
+								ruleToEl.addClass('invalid');
+								ruleToValidEl.setText(valueValid.string);
+							}
+						});
+				});
 
 				let deleteRulePrimed = false;
 				let ruleDeletePrimerTimer: ReturnType<typeof setTimeout> | null;
@@ -838,7 +925,22 @@ export class SettingsTab extends PluginSettingTab {
 			const patternCursorEl = patternEl.createEl('div');
 			patternCursorEl.addClass('pattern-cursor');
 
-			new Setting(patternCursorEl)
+			const patternCursorStartEl = patternCursorEl.createEl('div');
+			const patternCursorStartSetting = new Setting(patternCursorStartEl);
+			const patternCursorStartValidEl =
+				patternCursorStartEl.createEl('span');
+			patternCursorStartValidEl.addClass('validation-text');
+			const patternCursorStartValid = validateRuleString(
+				pattern.cursorRegexStart,
+			);
+			if (patternCursorStartValid.valid !== true) {
+				patternCursorStartEl.addClass('invalid');
+				patternCursorStartValidEl.setText(
+					patternCursorStartValid.string,
+				);
+			}
+
+			patternCursorStartSetting
 				.setName('Cursor/selection start (Regex)')
 				.setDesc(
 					'A regular expression to determine the starting location of the cursor after the Pattern has been applied. The cursor will be placed at the ending location of the first match.',
@@ -859,10 +961,33 @@ export class SettingsTab extends PluginSettingTab {
 							});
 
 							await this.plugin.saveSettings();
+
+							const valueValid = validateRuleString(value);
+							if (valueValid.valid === true) {
+								patternCursorStartEl.removeClass('invalid');
+								patternCursorStartValidEl.setText('');
+							} else {
+								patternCursorStartEl.addClass('invalid');
+								patternCursorStartValidEl.setText(
+									valueValid.string,
+								);
+							}
 						});
 				});
 
-			new Setting(patternCursorEl)
+			const patternCursorEndEl = patternCursorEl.createEl('div');
+			const patternCursorEndSetting = new Setting(patternCursorEndEl);
+			const patternCursorEndValidEl = patternCursorEndEl.createEl('span');
+			patternCursorEndValidEl.addClass('validation-text');
+			const patternCursorEndValid = validateRuleString(
+				pattern.cursorRegexEnd,
+			);
+			if (patternCursorEndValid.valid !== true) {
+				patternCursorEndEl.addClass('invalid');
+				patternCursorEndValidEl.setText(patternCursorEndValid.string);
+			}
+
+			patternCursorEndSetting
 				.setName('Cursor/selection end (Regex)')
 				.setDesc(
 					'A regular expression to determine the ending location of the cursor after the Pattern has been applied. The cursor will be placed at the ending location of the first match.',
@@ -883,6 +1008,17 @@ export class SettingsTab extends PluginSettingTab {
 							});
 
 							await this.plugin.saveSettings();
+
+							const valueValid = validateRuleString(value);
+							if (valueValid.valid === true) {
+								patternCursorEndEl.removeClass('invalid');
+								patternCursorEndValidEl.setText('');
+							} else {
+								patternCursorEndEl.addClass('invalid');
+								patternCursorEndValidEl.setText(
+									valueValid.string,
+								);
+							}
 						});
 				});
 		}
@@ -1116,7 +1252,23 @@ export class SettingsTab extends PluginSettingTab {
 						});
 				});
 
-			new Setting(commandEl)
+			const commandPatternNameEl = commandEl.createEl('div');
+			const commandPatternNameSetting = new Setting(commandPatternNameEl);
+			const commandPatternNameValidEl =
+				commandPatternNameEl.createEl('span');
+			commandPatternNameValidEl.addClass('validation-text');
+			const commandPatternNameValid = validateRuleString(
+				command.patternFilter,
+			);
+
+			if (commandPatternNameValid.valid !== true) {
+				commandPatternNameEl.addClass('invalid');
+				commandPatternNameValidEl.setText(
+					commandPatternNameValid.string,
+				);
+			}
+
+			commandPatternNameSetting
 				.setName('Pattern name filter')
 				.addText((text) => {
 					text.setPlaceholder('')
@@ -1134,6 +1286,18 @@ export class SettingsTab extends PluginSettingTab {
 							});
 
 							await this.plugin.saveSettings();
+
+							const valueValid = validateRuleString(value);
+
+							if (valueValid.valid === true) {
+								commandPatternNameEl.removeClass('invalid');
+								commandPatternNameValidEl.setText('');
+							} else {
+								commandPatternNameEl.addClass('invalid');
+								commandPatternNameValidEl.setText(
+									valueValid.string,
+								);
+							}
 						});
 				});
 
@@ -1185,6 +1349,50 @@ export class SettingsTab extends PluginSettingTab {
 								getSettings().commands,
 							);
 							newCommands[commandIndex].document = value;
+							updateSettings({
+								commands: newCommands,
+							});
+
+							await this.plugin.saveSettings();
+						});
+				});
+
+			new Setting(commandEl)
+				.setName('Apply to whole clipboard')
+				.setDesc(
+					'Apply the Pattern as with "Apply to whole document" to the clipboard.',
+				)
+				.addToggle((toggle) => {
+					toggle
+						.setTooltip('Apply to whole whole clipboard')
+						.setValue(command.clipboard || false)
+						.onChange(async (value) => {
+							const newCommands = cloneDeep(
+								getSettings().commands,
+							);
+							newCommands[commandIndex].clipboard = value;
+							updateSettings({
+								commands: newCommands,
+							});
+
+							await this.plugin.saveSettings();
+						});
+				});
+
+			new Setting(commandEl)
+				.setName('Apply to clipboard (line-by-line)')
+				.setDesc(
+					'Apply the Pattern as with "Apply to whole lines" to the clipboard.',
+				)
+				.addToggle((toggle) => {
+					toggle
+						.setTooltip('Apply to whole whole clipboard')
+						.setValue(command.clipboardLines || false)
+						.onChange(async (value) => {
+							const newCommands = cloneDeep(
+								getSettings().commands,
+							);
+							newCommands[commandIndex].clipboardLines = value;
 							updateSettings({
 								commands: newCommands,
 							});

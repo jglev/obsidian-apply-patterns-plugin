@@ -91,10 +91,12 @@ Follow the steps below to install the plugin.
 
 - This plugin uses the [ECMAScript / Javascript flavor](https://www.regular-expressions.info/javascript.html) of Regular Expressions.
 - Within a Pattern, rules execute sequentially. Thus, the output of Rule 1 is passed as input to Rule 2, and the output of Rule 2 is passed as input to Rule 3, etc. At the end of the set of rules, the final output is used to replace the text in the editor.
-- The plugin provides three commands by default:
+- The plugin provides five commands by default:
     - `Apply Patterns: Apply pattern to whole lines` will loop over each line that is selected in the editor, and apply the Pattern to the entirety of each line.
     - - `Apply Patterns: Apply pattern to whole document` will apply the Pattern to the entire document, as one (potentially multi-line) string.
     - `Apply Patterns: Apply pattern to selection` will apply the Pattern to just the text selected in the editor, as one (potentially multi-line) string.
+    - `Apply Patterns: Apply pattern to whole clipboard` will apply the Pattern as with "`Apply pattern to whole document`" to the clipboard.
+    - `Apply Patterns: Apply pattern to clipboard (line-by-line)` will apply the Pattern as with "`Apply pattern to whole lines`" to the clipboard.
     - In addition, you can set additional commands in the Settings tab.
 - Within the Settings tab:
     - Each rule can be disabled, moved up, and moved down in the pattern.

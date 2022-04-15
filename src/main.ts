@@ -79,6 +79,7 @@ export default class ApplyPatternsPlugin extends Plugin {
 					if (command[commandTypeKey] === true) {
 						this.addCommand({
 							id: `apply-pattern-${commandIndex}-${type}`,
+							icon: command?.icon,
 							name: `${
 								command.name ||
 								'Unnamed command ' + commandIndex

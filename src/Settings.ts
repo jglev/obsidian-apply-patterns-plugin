@@ -61,7 +61,7 @@ export const defaultSettings: Settings = {
 	filterString: '',
 	commandFilterString: '',
 	commands: [],
-	apiVersion: 5,
+	apiVersion: 6,
 	defaultCursorRegexEnd: '^',
 	defaultCursorRegexStart: '$',
 };
@@ -69,6 +69,7 @@ export const defaultSettings: Settings = {
 /** @see {isCommand} ts-auto-guard:type-guard */
 export interface Command {
 	name: string;
+	icon?: string;
 	patternFilter: string;
 	selection?: boolean;
 	lines?: boolean;
@@ -79,6 +80,7 @@ export interface Command {
 
 export const defaultCommandSettings: Command = {
 	name: '',
+	icon: 'search',
 	patternFilter: '',
 	selection: true,
 	lines: true,

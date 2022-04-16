@@ -25,6 +25,7 @@ export default class ApplyPatternsPlugin extends Plugin {
 		this.addCommand({
 			id: 'apply-pattern-to-lines',
 			name: 'Apply pattern to whole lines',
+			icon: 'lines-of-text',
 			editorCallback: (editor: Editor, view: View) => {
 				return applyPattern(editor, view, this.app, 'lines');
 			},
@@ -33,6 +34,7 @@ export default class ApplyPatternsPlugin extends Plugin {
 		this.addCommand({
 			id: 'apply-pattern-to-selection',
 			name: 'Apply pattern to selection',
+			icon: 'sheets-in-box',
 			editorCallback: (editor: Editor, view: View) => {
 				return applyPattern(editor, view, this.app, 'selection');
 			},
@@ -41,6 +43,7 @@ export default class ApplyPatternsPlugin extends Plugin {
 		this.addCommand({
 			id: 'apply-pattern-to-document',
 			name: 'Apply pattern to whole document',
+			icon: 'document',
 			editorCallback: (editor: Editor, view: View) => {
 				return applyPattern(editor, view, this.app, 'document');
 			},
@@ -49,6 +52,7 @@ export default class ApplyPatternsPlugin extends Plugin {
 		this.addCommand({
 			id: 'apply-pattern-to-clipboard-document',
 			name: 'Apply pattern to whole clipboard',
+			icon: 'document',
 			editorCallback: (editor: Editor, view: View) => {
 				return applyPattern(editor, view, this.app, 'clipboard');
 			},
@@ -57,6 +61,7 @@ export default class ApplyPatternsPlugin extends Plugin {
 		this.addCommand({
 			id: 'apply-pattern-to-clipboard-lines',
 			name: 'Apply pattern to clipboard (line-by-line)',
+			icon: 'lines-of-text',
 			editorCallback: (editor: Editor, view: View) => {
 				return applyPattern(editor, view, this.app, 'clipboardLines');
 			},
@@ -79,6 +84,7 @@ export default class ApplyPatternsPlugin extends Plugin {
 					if (command[commandTypeKey] === true) {
 						this.addCommand({
 							id: `apply-pattern-${commandIndex}-${type}`,
+							icon: command?.icon,
 							name: `${
 								command.name ||
 								'Unnamed command ' + commandIndex

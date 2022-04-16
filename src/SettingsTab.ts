@@ -1,5 +1,5 @@
 import cloneDeep from 'lodash.clonedeep';
-import { Notice, PluginSettingTab, Setting } from 'obsidian';
+import { DropdownComponent, Notice, PluginSettingTab, Setting } from 'obsidian';
 import { validateRuleString } from './ValidateRuleString';
 import {
 	Command,
@@ -668,7 +668,7 @@ export class SettingsTab extends PluginSettingTab {
 					});
 
 				new Setting(ruleEl)
-					.setName('Multiline off')
+					.setName('Multiline')
 					.setDesc('Regex mode "m"')
 					.addToggle((toggle) => {
 						toggle
@@ -1130,6 +1130,149 @@ export class SettingsTab extends PluginSettingTab {
 								...newCommands[commandIndex],
 								name: value,
 							});
+							updateSettings({
+								commands: newCommands,
+							});
+
+							await this.plugin.saveSettings();
+						});
+				});
+
+			new Setting(commandEl)
+				.setName('Command Palette icon (mobile)')
+				.addDropdown((dropdown) => {
+					// This list comes from
+					// https://forum.obsidian.md/t/list-of-available-icons-for-component-seticon/16332/4?u=l.j
+					dropdown
+						.addOptions({
+							'any-key': 'any-key',
+							'audio-file': 'audio-file',
+							blocks: 'blocks',
+							'bold-glyph': 'bold-glyph',
+							'bracket-glyph': 'bracket-glyph',
+							'broken-link': 'broken-link',
+							'bullet-list': 'bullet-list',
+							'bullet-list-glyph': 'bullet-list-glyph',
+							'calendar-with-checkmark':
+								'calendar-with-checkmark',
+							'check-in-circle': 'check-in-circle',
+							'check-small': 'check-small',
+							'checkbox-glyph': 'checkbox-glyph',
+							checkmark: 'checkmark',
+							clock: 'clock',
+							cloud: 'cloud',
+							'code-glyph': 'code-glyph',
+							'create-new': 'create-new',
+							cross: 'cross',
+							'cross-in-box': 'cross-in-box',
+							'crossed-star': 'crossed-star',
+							csv: 'csv',
+							deleteColumn: 'deleteColumn',
+							deleteRow: 'deleteRow',
+							dice: 'dice',
+							document: 'document',
+							documents: 'documents',
+							'dot-network': 'dot-network',
+							'double-down-arrow-glyph':
+								'double-down-arrow-glyph',
+							'double-up-arrow-glyph': 'double-up-arrow-glyph',
+							'down-arrow-with-tail': 'down-arrow-with-tail',
+							'down-chevron-glyph': 'down-chevron-glyph',
+							enter: 'enter',
+							'exit-fullscreen': 'exit-fullscreen',
+							'expand-vertically': 'expand-vertically',
+							'filled-pin': 'filled-pin',
+							folder: 'folder',
+							formula: 'formula',
+							'forward-arrow': 'forward-arrow',
+							fullscreen: 'fullscreen',
+							gear: 'gear',
+							'go-to-file': 'go-to-file',
+							hashtag: 'hashtag',
+							'heading-glyph': 'heading-glyph',
+							help: 'help',
+							'highlight-glyph': 'highlight-glyph',
+							'horizontal-split': 'horizontal-split',
+							'image-file': 'image-file',
+							'image-glyph': 'image-glyph',
+							'indent-glyph': 'indent-glyph',
+							info: 'info',
+							insertColumn: 'insertColumn',
+							insertRow: 'insertRow',
+							install: 'install',
+							'italic-glyph': 'italic-glyph',
+							'keyboard-glyph': 'keyboard-glyph',
+							languages: 'languages',
+							'left-arrow': 'left-arrow',
+							'left-arrow-with-tail': 'left-arrow-with-tail',
+							'left-chevron-glyph': 'left-chevron-glyph',
+							'lines-of-text': 'lines-of-text',
+							link: 'link',
+							'link-glyph': 'link-glyph',
+							'logo-crystal': 'logo-crystal',
+							'magnifying-glass': 'magnifying-glass',
+							microphone: 'microphone',
+							'microphone-filled': 'microphone-filled',
+							'minus-with-circle': 'minus-with-circle',
+							moveColumnLeft: 'moveColumnLeft',
+							moveColumnRight: 'moveColumnRight',
+							moveRowDown: 'moveRowDown',
+							moveRowUp: 'moveRowUp',
+							'note-glyph': 'note-glyph',
+							'number-list-glyph': 'number-list-glyph',
+							'open-vault': 'open-vault',
+							'pane-layout': 'pane-layout',
+							'paper-plane': 'paper-plane',
+							paused: 'paused',
+							'pdf-file': 'pdf-file',
+							pencil: 'pencil',
+							'percent-sign-glyph': 'percent-sign-glyph',
+							pin: 'pin',
+							'plus-with-circle': 'plus-with-circle',
+							'popup-open': 'popup-open',
+							presentation: 'presentation',
+							'price-tag-glyph': 'price-tag-glyph',
+							'quote-glyph': 'quote-glyph',
+							'redo-glyph': 'redo-glyph',
+							reset: 'reset',
+							'right-arrow': 'right-arrow',
+							'right-arrow-with-tail': 'right-arrow-with-tail',
+							'right-chevron-glyph': 'right-chevron-glyph',
+							'right-triangle': 'right-triangle',
+							'run-command': 'run-command',
+							search: 'search',
+							'sheets-in-box': 'sheets-in-box',
+							sortAsc: 'sortAsc',
+							sortDesc: 'sortDesc',
+							spreadsheet: 'spreadsheet',
+							'stacked-levels': 'stacked-levels',
+							star: 'star',
+							'star-list': 'star-list',
+							'strikethrough-glyph': 'strikethrough-glyph',
+							switch: 'switch',
+							sync: 'sync',
+							'sync-small': 'sync-small',
+							'tag-glyph': 'tag-glyph',
+							'three-horizontal-bars': 'three-horizontal-bars',
+							trash: 'trash',
+							'undo-glyph': 'undo-glyph',
+							'unindent-glyph': 'unindent-glyph',
+							'up-and-down-arrows': 'up-and-down-arrows',
+							'up-arrow-with-tail': 'up-arrow-with-tail',
+							'up-chevron-glyph': 'up-chevron-glyph',
+							'uppercase-lowercase-a': 'uppercase-lowercase-a',
+							vault: 'vault',
+							'vertical-split': 'vertical-split',
+							'vertical-three-dots': 'vertical-three-dots',
+							'wrench-screwdriver-glyph':
+								'wrench-screwdriver-glyph',
+						})
+						.setValue(command?.icon)
+						.onChange(async (value) => {
+							const newCommands = cloneDeep(
+								getSettings().commands,
+							);
+							newCommands[commandIndex].icon = value;
 							updateSettings({
 								commands: newCommands,
 							});

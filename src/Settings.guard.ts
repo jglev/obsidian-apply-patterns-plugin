@@ -62,6 +62,7 @@ export function isCommand(obj: any, _argumentName?: string): obj is Command {
             typeof obj === "object" ||
             typeof obj === "function") &&
         typeof obj.name === "string" &&
+        typeof obj.icon === "string" &&
         typeof obj.patternFilter === "string" &&
         typeof obj.selection === "boolean" &&
         typeof obj.lines === "boolean" &&

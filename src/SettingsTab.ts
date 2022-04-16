@@ -668,7 +668,7 @@ export class SettingsTab extends PluginSettingTab {
 					});
 
 				new Setting(ruleEl)
-					.setName('Multiline off')
+					.setName('Multiline')
 					.setDesc('Regex mode "m"')
 					.addToggle((toggle) => {
 						toggle

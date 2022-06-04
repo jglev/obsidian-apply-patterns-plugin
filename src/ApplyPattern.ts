@@ -17,6 +17,7 @@ const calculateCursorPoints = (
 	lines: Array<string>,
 	cursorStartRegex: { valid: boolean | null; string: string },
 	cursorEndRegex: { valid: boolean | null; string: string },
+	offsetStart?: number,
 ): {
 	from: { line: number; ch: number };
 	to?: { line: number; ch: number };
@@ -24,13 +25,17 @@ const calculateCursorPoints = (
 	let cursorStart = { line: minLine, ch: 0 };
 	let cursorEnd = { line: minLine, ch: 0 };
 
+	console.log(27, cursorStartRegex.string, cursorEndRegex.string);
+
 	let cursorStartMatch = lines
 		.join('\n')
 		.match(new RegExp(cursorStartRegex.string));
+	console.log(30, cursorStartMatch);
 
 	let cursorEndMatch = lines
 		.join('\n')
 		.match(new RegExp(cursorEndRegex.string));
+	console.log(35, cursorEndMatch);
 
 	if (cursorStartMatch === null && cursorEndMatch !== null) {
 		cursorStartMatch = cursorEndMatch;
@@ -45,8 +50,18 @@ const calculateCursorPoints = (
 			.split('\n');
 		cursorStart = {
 			line: minLine + beforeCursorMatch.length - 1,
-			ch: beforeCursorMatch[beforeCursorMatch.length - 1].length,
+			ch:
+				(offsetStart || 0) +
+				beforeCursorMatch[beforeCursorMatch.length - 1].length,
 		};
+		console.log(55, {
+			offsetStart: offsetStart,
+			beforeCursorMatch: beforeCursorMatch,
+			cursorStart: cursorStart,
+			string: beforeCursorMatch[beforeCursorMatch.length - 1],
+			stringLength:
+				beforeCursorMatch[beforeCursorMatch.length - 1].length,
+		});
 	}
 
 	if (cursorEndMatch !== null) {
@@ -269,6 +284,8 @@ export const applyPattern = (
 				cursorStartRegex,
 				cursorEndRegex,
 			);
+
+			console.log(288, finalCursorPositions);
 		}
 
 		if (mode === 'selection') {
@@ -293,6 +310,7 @@ export const applyPattern = (
 				newContentSplit,
 				cursorStartRegex,
 				cursorEndRegex,
+				cursorFrom.ch,
 			);
 
 			if (finalCursorPositions.to) {
@@ -343,9 +361,16 @@ export const applyPattern = (
 			);
 		}
 
+		transaction.selection = {
+			from: finalCursorPositions.from,
+			to: finalCursorPositions.to,
+		};
+
 		editor.transaction(transaction);
 
-		editor.setSelection(finalCursorPositions.from, finalCursorPositions.to);
+		console.log(366, finalCursorPositions.from, finalCursorPositions.to);
+
+		// editor.setSelection(finalCursorPositions.from, finalCursorPositions.to);
 	};
 
 	// Need to create a new instance every time, as cursor can change.

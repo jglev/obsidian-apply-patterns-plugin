@@ -953,7 +953,7 @@ export class SettingsTab extends PluginSettingTab {
 								getSettings().patterns,
 							);
 							newPatterns.splice(patternIndex, 1, {
-								...patterns[patternIndex],
+								...newPatterns[patternIndex],
 								cursorRegexStart: value,
 							});
 							updateSettings({
@@ -1000,7 +1000,7 @@ export class SettingsTab extends PluginSettingTab {
 								getSettings().patterns,
 							);
 							newPatterns.splice(patternIndex, 1, {
-								...patterns[patternIndex],
+								...newPatterns[patternIndex],
 								cursorRegexEnd: value,
 							});
 							updateSettings({

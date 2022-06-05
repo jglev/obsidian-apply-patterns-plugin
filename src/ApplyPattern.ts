@@ -17,6 +17,7 @@ const calculateCursorPoints = (
 	lines: Array<string>,
 	cursorStartRegex: { valid: boolean | null; string: string },
 	cursorEndRegex: { valid: boolean | null; string: string },
+	offsetStart?: number,
 ): {
 	from: { line: number; ch: number };
 	to?: { line: number; ch: number };
@@ -45,7 +46,9 @@ const calculateCursorPoints = (
 			.split('\n');
 		cursorStart = {
 			line: minLine + beforeCursorMatch.length - 1,
-			ch: beforeCursorMatch[beforeCursorMatch.length - 1].length,
+			ch:
+				(offsetStart || 0) +
+				beforeCursorMatch[beforeCursorMatch.length - 1].length,
 		};
 	}
 
@@ -293,6 +296,7 @@ export const applyPattern = (
 				newContentSplit,
 				cursorStartRegex,
 				cursorEndRegex,
+				cursorFrom.ch,
 			);
 
 			if (finalCursorPositions.to) {
@@ -343,9 +347,12 @@ export const applyPattern = (
 			);
 		}
 
-		editor.transaction(transaction);
+		transaction.selection = {
+			from: finalCursorPositions.from,
+			to: finalCursorPositions.to,
+		};
 
-		editor.setSelection(finalCursorPositions.from, finalCursorPositions.to);
+		editor.transaction(transaction);
 	};
 
 	// Need to create a new instance every time, as cursor can change.

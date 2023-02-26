@@ -10,15 +10,18 @@ import {
 
 export const filterPatterns = (command?: Command): number[] => {
     const patterns = getSettings().patterns;
+
     let patternIndexes: number[] = getSettings()
-        .patterns.filter(
-            (pattern: Pattern) =>
-                pattern.rules.length > 0 &&
-                pattern.rules.every((rule: PatternRule) => rule.from !== ''),
+        .patterns
+		.map((pattern: Pattern, patternIndex: number) => {
+			return {pattern, patternIndex}
+		})
+		.filter(
+            (p: {pattern: Pattern, patternIndex: number}) => 
+                p.pattern.rules.length > 0 &&
+                p.pattern.rules.every((rule: PatternRule) => rule.from !== '')
         )
-        .map((_: Pattern, patternIndex: number) => {
-            return patternIndex;
-        });
+        .map((p: {pattern: Pattern, patternIndex: number}) => p.patternIndex );
 
     if (command !== undefined && command.patternFilter !== '') {
         try {

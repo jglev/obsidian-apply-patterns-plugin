@@ -1,6 +1,6 @@
 {
   "name": "obsidian-apply-patterns",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "An Obsidian plugin for applying patterns of find and replace in succession.",
   "main": "main.js",
   "scripts": {

@@ -160,7 +160,7 @@ export class SettingsTab extends PluginSettingTab {
 			.setDesc(
 				'A regular expression to determine the default starting location of the cursor after a Pattern has been applied. The cursor will be placed at the ending location of the first match.',
 			)
-			.addText((text) => {
+			.addTextArea((text) => {
 				const settings = getSettings();
 				text.setValue(settings.defaultCursorRegexStart || '').onChange(
 					async (value) => {
@@ -202,7 +202,7 @@ export class SettingsTab extends PluginSettingTab {
 			.setDesc(
 				'A regular expression to determine the default ending location of the cursor after the Pattern has been applied. The cursor will be placed at the ending location of the first match.',
 			)
-			.addText((text) => {
+			.addTextArea((text) => {
 				const settings = getSettings();
 				text.setValue(settings.defaultCursorRegexEnd || '').onChange(
 					async (value) => {
@@ -582,7 +582,7 @@ export class SettingsTab extends PluginSettingTab {
 				new Setting(ruleFromEl)
 					.setName('Notes')
 					.setDesc('Notes to help remember what this rule does.')
-					.addText((text) => {
+					.addTextArea((text) => {
 						text.setPlaceholder('')
 							.setValue(rule.notes)
 							.onChange(async (value) => {
@@ -618,7 +618,7 @@ export class SettingsTab extends PluginSettingTab {
 
 				ruleFromElSetting
 					.setName('Matching text (Regex)')
-					.addText((text) => {
+					.addTextArea((text) => {
 						text.setPlaceholder('')
 							.setValue(rule.from)
 							.onChange(async (value) => {
@@ -750,7 +750,7 @@ export class SettingsTab extends PluginSettingTab {
 					ruleToValidEl.setText(ruleToValid.string);
 				}
 
-				ruleToElSetting.setName('Replacement text').addText((text) => {
+				ruleToElSetting.setName('Replacement text').addTextArea((text) => {
 					text.setPlaceholder('')
 						.setValue(rule.to)
 						.onChange(async (value) => {
@@ -974,7 +974,7 @@ export class SettingsTab extends PluginSettingTab {
 				.setDesc(
 					'A regular expression to determine the starting location of the cursor after the Pattern has been applied. The cursor will be placed at the ending location of the first match.',
 				)
-				.addText((text) => {
+				.addTextArea((text) => {
 					text.setPlaceholder('')
 						.setValue(pattern.cursorRegexStart)
 						.onChange(async (value) => {
@@ -1021,7 +1021,7 @@ export class SettingsTab extends PluginSettingTab {
 				.setDesc(
 					'A regular expression to determine the ending location of the cursor after the Pattern has been applied. The cursor will be placed at the ending location of the first match.',
 				)
-				.addText((text) => {
+				.addTextArea((text) => {
 					text.setPlaceholder('')
 						.setValue(pattern.cursorRegexEnd)
 						.onChange(async (value) => {

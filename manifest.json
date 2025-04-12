@@ -1,7 +1,7 @@
 {
   "id": "obsidian-apply-patterns",
   "name": "Apply Patterns",
-  "version": "2.2.0",
+  "version": "2.2.0-beta0",
   "minAppVersion": "1.8.0",
   "description": "Apply custom patterns of find-and-replace in succession to text.",
   "author": "Jacob Levernier",

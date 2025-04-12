@@ -6,9 +6,7 @@ This plugin allows creating collections of find-and-replace "rules," and applyin
 
 **Supports creating search and replace patterns of natural language dates, including ranges of dates.**
 
-> Please submit bugs here: https://github.com/jglev/obsidian-apply-patterns-plugin
->
-> Please submit ideas here: https://github.com/jglev/obsidian-apply-patterns-plugin/discussions/categories/ideas
+> Please submit bugs and feature requests here: https://github.com/jglev/obsidian-apply-patterns-plugin
 >
 > Please ask for help here: https://github.com/jglev/obsidian-apply-patterns-plugin/discussions/categories/q-a
 

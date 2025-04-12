@@ -79,7 +79,7 @@ export class SettingsTab extends PluginSettingTab {
 				href: 'https://www.regular-expressions.info/brackets.html',
 				text: 'Capture groups',
 			}),
-			' can be referenced using "$1", "$2", etc.',
+			' TEST 123 can be referenced using "$1", "$2", etc.',
 		);
 		patternsDescToTipsEl.createEl('li').append(
 			'To ',

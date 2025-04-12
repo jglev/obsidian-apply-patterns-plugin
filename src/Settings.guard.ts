@@ -55,7 +55,8 @@ export function isPatternRule(obj: unknown): obj is PatternRule {
         typeof typedObj["global"] === "boolean" &&
         typeof typedObj["multiline"] === "boolean" &&
         typeof typedObj["sticky"] === "boolean" &&
-        typeof typedObj["disabled"] === "boolean"
+        typeof typedObj["disabled"] === "boolean" &&
+        typeof typedObj["notes"] === "string"
     )
 }
 

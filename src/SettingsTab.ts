@@ -932,7 +932,7 @@ export class SettingsTab extends PluginSettingTab {
 					});
 			});
 
-			const addRuleButtonEl = patternRulesEl.createDiv('add-rule-button');
+			const addRuleButtonEl = patternEl.createDiv('add-rule-button');
 
 			new Setting(addRuleButtonEl).addButton((button) => {
 				button

@@ -5,6 +5,7 @@
 .pattern,
 .command {
     border-top: 2px solid var(--interactive-accent);
+	margin-top: 1em;
 }
 
 .pattern:nth-last-child(2),
@@ -31,6 +32,13 @@
 .pattern.collapsed .pattern-rules,
 .pattern.collapsed .pattern-cursor {
     display: none;
+}
+
+.pattern-rules {
+	margin-left: 0.5em;
+    border-left: 1px solid black;
+    padding-left: 1em;
+    margin-bottom: 1em;
 }
 
 .pattern.primed div[aria-label="Delete pattern"],

@@ -1,5 +1,5 @@
 import cloneDeep from 'lodash.clonedeep';
-import { DropdownComponent, Notice, PluginSettingTab, Setting } from 'obsidian';
+import { App, Modal, Notice, PluginSettingTab, Setting } from 'obsidian';
 import { validateRuleString } from './ValidateRuleString';
 import {
 	Command,
@@ -25,6 +25,28 @@ const moveInArray = (arr: any[], from: number, to: number) => {
 	arrClone.splice(to, 0, item);
 	return arrClone;
 };
+
+class CompiledRegexModal extends Modal {
+	text: string;
+
+	constructor(app: App, text: string) {
+		super(app);
+		this.text = text;
+	}
+
+	onOpen() {
+		const { contentEl } = this;
+		contentEl.addClass('apply-patterns-modal');
+
+		const span = contentEl.createEl('span');
+		span.innerText = this.text;
+	}
+
+	onClose() {
+		const { contentEl } = this;
+		contentEl.empty();
+	}
+}
 
 export class SettingsTab extends PluginSettingTab {
 	private readonly plugin: ApplyPatterns;
@@ -825,23 +847,22 @@ export class SettingsTab extends PluginSettingTab {
 									return;
 								}
 
-								new Notice(
-									new RegExp(
-										fromValidated.string,
-										'u' +
-											(updatedRule.caseInsensitive
-												? 'i'
-												: '') +
-											(updatedRule.global ? 'g' : '') +
-											(updatedRule.multiline ? 'm' : '') +
-											(updatedRule.sticky ? 's' : ''),
-									).toString() +
-										'\n⇩\n' +
-										(toValidated.string !== ''
-											? '"' + toValidated.string + '"'
-											: '[Remove]'),
-									noticeTimeoutSeconds,
-								);
+								const compiled_text = new RegExp(
+									fromValidated.string,
+									'u' +
+										(updatedRule.caseInsensitive
+											? 'i'
+											: '') +
+										(updatedRule.global ? 'g' : '') +
+										(updatedRule.multiline ? 'm' : '') +
+										(updatedRule.sticky ? 's' : ''),
+								).toString() +
+									'\n⇩\n' +
+									(toValidated.string !== ''
+										? '"' + toValidated.string + '"'
+										: '[Remove]');
+
+								new CompiledRegexModal(this.app, compiled_text).open();
 							});
 					})
 					.addExtraButton((button) => {

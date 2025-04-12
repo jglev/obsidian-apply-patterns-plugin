@@ -13,6 +13,11 @@
 	margin-top: 1em;
 }
 
+.apply-patterns-modal {
+	-webkit-user-select: text !important;
+	user-select: text !important;
+}
+
 
 .pattern:nth-last-child(2),
 .command:nth-last-child(2) {

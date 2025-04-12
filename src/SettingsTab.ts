@@ -79,7 +79,7 @@ export class SettingsTab extends PluginSettingTab {
 				href: 'https://www.regular-expressions.info/brackets.html',
 				text: 'Capture groups',
 			}),
-			' TEST 123 can be referenced using "$1", "$2", etc.',
+			' can be referenced using "$1", "$2", etc.',
 		);
 		patternsDescToTipsEl.createEl('li').append(
 			'To ',
@@ -578,6 +578,35 @@ export class SettingsTab extends PluginSettingTab {
 					});
 
 				const ruleFromEl = ruleEl.createEl('div');
+
+				new Setting(ruleFromEl)
+					.setName('Notes')
+					.setDesc('Notes to help remember what this rule does.')
+					.addText((text) => {
+						text.setPlaceholder('')
+							.setValue(rule.notes)
+							.onChange(async (value) => {
+								const newPatterns = cloneDeep(
+									getSettings().patterns,
+								);
+								newPatterns[patternIndex].rules.splice(
+									ruleIndex,
+									1,
+									{
+										...newPatterns[patternIndex].rules[
+											ruleIndex
+										],
+										notes: value || '',
+									},
+								);
+								updateSettings({
+									patterns: newPatterns,
+								});
+	
+								await this.plugin.saveSettings();
+							});
+					});
+
 				const ruleFromElSetting = new Setting(ruleFromEl);
 				const ruleFromValidEl = ruleFromEl.createEl('span');
 				ruleFromValidEl.addClass('validation-text');

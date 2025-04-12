@@ -44,6 +44,7 @@ export interface PatternRule {
 	multiline: boolean;
 	sticky: boolean;
 	disabled?: boolean;
+	notes?: string;
 }
 
 export const defaultPatternRuleSettings: PatternRule = {
@@ -54,6 +55,7 @@ export const defaultPatternRuleSettings: PatternRule = {
 	multiline: false,
 	sticky: false,
 	disabled: false,
+	notes: ''
 };
 
 export const defaultSettings: Settings = {
